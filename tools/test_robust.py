@@ -141,7 +141,8 @@ def main():
                 # if 'f1_score' in k and v > f1_best:
                 #     f1_best = v
                 #     f1_best_str = f'\n{k} : {v:.2f}'
-                print(f'\n{k} : {v:.2f}')
+                # print(f'\n{k} : {v:.2f}')
+                print(k, " : ", v)
             # print('best: ', f1_best_str)
         else:
             warnings.warn('Evaluation metrics are not specified.')
