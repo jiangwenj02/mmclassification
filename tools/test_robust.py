@@ -133,7 +133,6 @@ def main():
             threshold_list = np.arange(0, 1, 0.01).tolist()
             threshold_list = tuple(threshold_list)
             args.metric_options['thrs'] = 0.5
-            args.metric_options['average_mode'] = 'none'
             results = dataset.evaluate(outputs, args.metrics,
                                        args.metric_options)
             f1_best = 0
