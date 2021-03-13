@@ -99,8 +99,6 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
             _pred_label[pred_score <= thr] = -1
         pred_positive = label == _pred_label.reshape(-1, 1)
         gt_positive = label == target.reshape(-1, 1)
-        import pdb
-        pdb.set_trace()
         precision = (pred_positive & gt_positive).sum(0) / np.maximum(
             pred_positive.sum(0), 1) * 100
         recall = (pred_positive & gt_positive).sum(0) / np.maximum(
