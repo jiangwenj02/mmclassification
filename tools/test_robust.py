@@ -132,17 +132,17 @@ def main():
         if args.metrics:
             threshold_list = np.arange(0, 1, 0.01).tolist()
             threshold_list = tuple(threshold_list)
-            args.metric_options['thrs'] = threshold_list
+            args.metric_options['thrs'] = 0.5
             args.metric_options['average_mode'] = 'none'
             results = dataset.evaluate(outputs, args.metrics,
                                        args.metric_options)
             f1_best = 0
             for k, v in results.items():
-                if 'f1_score' in k and v > f1_best:
-                    f1_best = v
-                    f1_best_str = f'\n{k} : {v:.2f}'
-                #print(f'\n{k} : {v:.2f}')
-            print('best: ', f1_best_str)
+                # if 'f1_score' in k and v > f1_best:
+                #     f1_best = v
+                #     f1_best_str = f'\n{k} : {v:.2f}'
+                print(f'\n{k} : {v:.2f}')
+            # print('best: ', f1_best_str)
         else:
             warnings.warn('Evaluation metrics are not specified.')
             scores = np.vstack(outputs)
