@@ -132,7 +132,7 @@ def main():
         if args.metrics:
             threshold_list = np.arange(0, 1, 0.01).tolist()
             threshold_list = tuple(threshold_list)
-            args.metrics['thrs'] = threshold_list
+            args.metric_options['thrs'] = threshold_list
             results = dataset.evaluate(outputs, args.metrics,
                                        args.metric_options)
             for k, v in results.items():
