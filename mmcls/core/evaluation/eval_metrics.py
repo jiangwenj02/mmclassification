@@ -112,6 +112,7 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
             precision = float(precision.mean())
             recall = float(recall.mean())
             f1_score = float(f1_score.mean())
+            f2_score = float(f2_score.mean())
         precisions.append(precision)
         recalls.append(recall)
         f1_scores.append(f1_score)
