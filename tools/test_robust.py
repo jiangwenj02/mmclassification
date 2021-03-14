@@ -142,6 +142,7 @@ def main():
                 if 'f1_score' in k and v > f1_best:
                     f1_best = v
                     f1_best_str = f'\n{k} : {v:.2f}'
+                    print(k)
                     f1_best_thr = float(k.split('_')[-1])
                 # print(f'\n{k} : {v:.2f}')
                 # print(k, " : ", v)
