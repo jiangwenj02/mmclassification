@@ -133,14 +133,24 @@ def main():
             threshold_list = np.arange(0, 1, 0.01).tolist()
             threshold_list = tuple(threshold_list)
             args.metric_options['thrs'] = 0.5
+            
             results = dataset.evaluate(outputs, args.metrics,
                                        args.metric_options)
             f1_best = 0
+            f1_best_thr = 0
             for k, v in results.items():
-                # if 'f1_score' in k and v > f1_best:
-                #     f1_best = v
-                #     f1_best_str = f'\n{k} : {v:.2f}'
+                if 'f1_score' in k and v > f1_best:
+                    f1_best = v
+                    f1_best_str = f'\n{k} : {v:.2f}'
+                    f1_best_thr = float(k.split('_')[-1])
                 # print(f'\n{k} : {v:.2f}')
+                # print(k, " : ", v)
+            print('best: ', f1_best_str)
+            args.metric_options['thrs'] = f1_best_thr
+            args.metric_options['average_mode'] = 'none'
+            results = dataset.evaluate(outputs, args.metrics,
+                                       args.metric_options)
+            for k, v in results.items():
                 print(k, " : ", v)
             # print('best: ', f1_best_str)
         else:
