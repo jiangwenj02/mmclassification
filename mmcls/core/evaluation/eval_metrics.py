@@ -237,4 +237,4 @@ def support(pred, target, average_mode='macro'):
             res = res.numpy()
         else:
             raise ValueError(f'Unsupport type of averaging {average_mode}.')
-    return res
+    return res, confusion_matrix

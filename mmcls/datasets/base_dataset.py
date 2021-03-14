@@ -176,9 +176,10 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
                      for k, v in eval_results_.items()})
 
         if 'support' in metrics:
-            support_value = support(
+            support_value,cm = support(
                 results, gt_labels, average_mode=average_mode)
             eval_results['support'] = support_value
+            eval_results['cm'] = cm
 
         precision_recall_f1_keys = ['precision', 'recall', 'f1_score', 'f2_score']
         if len(set(metrics) & set(precision_recall_f1_keys)) != 0:
