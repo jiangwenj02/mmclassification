@@ -147,13 +147,15 @@ def main():
                 # print(k, " : ", v)
             print('best: ', f1_best_str)
             args.metric_options['thrs'] = f1_best_thr
+            results = dataset.evaluate(outputs, args.metrics,
+                                       args.metric_options)
+            for k, v in results.items():
+                print(k, " : ", v)
             args.metric_options['average_mode'] = 'none'
             results = dataset.evaluate(outputs, args.metrics,
                                        args.metric_options)
             for k, v in results.items():
                 print(k, " : ", v)
-            tn, fp, fn, tp = results['support'].ravel()
-            print(tn, fp, fn, tp)
             # print('best: ', f1_best_str)
         else:
             warnings.warn('Evaluation metrics are not specified.')
