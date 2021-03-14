@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 from mmcls.core.evaluation import precision_recall_f1, support
 from mmcls.models.losses import accuracy
 from .pipelines import Compose
-
+from sklearn.metrics import confusion_matrix
 
 class BaseDataset(Dataset, metaclass=ABCMeta):
     """Base dataset.
@@ -179,6 +179,12 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
             support_value = support(
                 results, gt_labels, average_mode=average_mode)
             eval_results['support'] = support_value
+
+        import pdb
+        pdb.set_trace()
+        preds = np.argmax(results,0)
+        cm = confusion_matrix(preds, gt_labels)
+        eval_results['cm'] = cm
 
         precision_recall_f1_keys = ['precision', 'recall', 'f1_score']
         if len(set(metrics) & set(precision_recall_f1_keys)) != 0:
