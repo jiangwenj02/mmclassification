@@ -180,9 +180,7 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
                 results, gt_labels, average_mode=average_mode)
             eval_results['support'] = support_value
 
-        import pdb
-        pdb.set_trace()
-        preds = np.argmax(results,0)
+        preds = np.argmax(results,1)
         cm = confusion_matrix(preds, gt_labels)
         eval_results['cm'] = cm
 
