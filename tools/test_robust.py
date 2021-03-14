@@ -152,6 +152,8 @@ def main():
                                        args.metric_options)
             for k, v in results.items():
                 print(k, " : ", v)
+            tn, fp, fn, tp = results['cm'].ravel()
+            print(tn, fp, fn, tp)
             # print('best: ', f1_best_str)
         else:
             warnings.warn('Evaluation metrics are not specified.')
