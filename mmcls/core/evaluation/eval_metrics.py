@@ -92,6 +92,7 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
     precisions = []
     recalls = []
     f1_scores = []
+    f2_scores = []
     for thr in thrs:
         # Only prediction values larger than thr are counted as positive
         _pred_label = pred_label.copy()
@@ -105,6 +106,8 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
             gt_positive.sum(0), 1) * 100
         f1_score = 2 * precision * recall / np.maximum(precision + recall,
                                                        1e-20)
+        f2_score = 5 * precision * recall / np.maximum(4 * precision + recall,
+                                                       1e-20)
         if average_mode == 'macro':
             precision = float(precision.mean())
             recall = float(recall.mean())
@@ -112,11 +115,12 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
         precisions.append(precision)
         recalls.append(recall)
         f1_scores.append(f1_score)
+        f2_scores.append(f2_score)
 
     if return_single:
-        return precisions[0], recalls[0], f1_scores[0]
+        return precisions[0], recalls[0], f1_scores[0], f2_scores[0]
     else:
-        return precisions, recalls, f1_scores
+        return precisions, recalls, f1_scores, f2_scores
 
 
 def precision(pred, target, average_mode='macro', thrs=None):
@@ -143,7 +147,7 @@ def precision(pred, target, average_mode='macro', thrs=None):
             float or np.array. If ``thrs`` is a tuple, the function will return
              a list containing metrics for each ``thrs`` condition.
     """
-    precisions, _, _ = precision_recall_f1(pred, target, average_mode, thrs)
+    precisions, _, _,_ = precision_recall_f1(pred, target, average_mode, thrs)
     return precisions
 
 
@@ -171,7 +175,7 @@ def recall(pred, target, average_mode='macro', thrs=None):
             float or np.array. If ``thrs`` is a tuple, the function will return
              a list containing metrics for each ``thrs`` condition.
     """
-    _, recalls, _ = precision_recall_f1(pred, target, average_mode, thrs)
+    _, recalls, _,_ = precision_recall_f1(pred, target, average_mode, thrs)
     return recalls
 
 
@@ -199,7 +203,7 @@ def f1_score(pred, target, average_mode='macro', thrs=None):
             float or np.array. If ``thrs`` is a tuple, the function will return
              a list containing metrics for each ``thrs`` condition.
     """
-    _, _, f1_scores = precision_recall_f1(pred, target, average_mode, thrs)
+    _, _, f1_scores,_ = precision_recall_f1(pred, target, average_mode, thrs)
     return f1_scores
 
 

@@ -180,10 +180,6 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
                 results, gt_labels, average_mode=average_mode)
             eval_results['support'] = support_value
 
-        preds = np.argmax(results,1)
-        cm = confusion_matrix(preds, gt_labels)
-        eval_results['cm'] = cm
-
         precision_recall_f1_keys = ['precision', 'recall', 'f1_score']
         if len(set(metrics) & set(precision_recall_f1_keys)) != 0:
             precision_recall_f1_values = precision_recall_f1(

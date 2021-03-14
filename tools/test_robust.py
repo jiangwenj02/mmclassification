@@ -148,11 +148,12 @@ def main():
             print('best: ', f1_best_str)
             args.metric_options['thrs'] = f1_best_thr
             args.metric_options['average_mode'] = 'none'
+            args.metric_options['support'] = True
             results = dataset.evaluate(outputs, args.metrics,
                                        args.metric_options)
             for k, v in results.items():
                 print(k, " : ", v)
-            tn, fp, fn, tp = results['cm'].ravel()
+            tn, fp, fn, tp = results['support'].ravel()
             print(tn, fp, fn, tp)
             # print('best: ', f1_best_str)
         else:
