@@ -10,7 +10,7 @@ import torch
 import torch.distributed as dist
 from mmcv.image import tensor2imgs
 from mmcv.runner import get_dist_info
-
+import cv2
 
 
 def single_gpu_test(model,
@@ -59,8 +59,7 @@ def single_gpu_test(model,
 
                 ori_h, ori_w = img_meta['ori_shape'][:-1]
                 img_show = mmcv.imresize(img_show, (ori_w, ori_h))
-                import pdb
-                pdb.set_trace()
+
                 heatmap = heatmaps[i, inds[i], :, :]
                 heatmap = heatmap - np.min(heatmap)
                 heatmap = heatmap / np.max(heatmap)
