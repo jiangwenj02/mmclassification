@@ -60,7 +60,7 @@ def single_gpu_test(model,
                 ori_h, ori_w = img_meta['ori_shape'][:-1]
                 img_show = mmcv.imresize(img_show, (ori_w, ori_h))
 
-                heatmap = heatmaps[i, inds[i], :, :]
+                heatmap = heatmaps[i, 0, :, :]
                 heatmap = heatmap - np.min(heatmap)
                 heatmap = heatmap / np.max(heatmap)
                 heatmap = np.uint8(255 * heatmap)
