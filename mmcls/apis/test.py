@@ -65,7 +65,7 @@ def single_gpu_test(model,
                 heatmap = heatmap / np.max(heatmap)
                 heatmap = np.uint8(255 * heatmap)
                 heatmap = mmcv.imresize(heatmap, (ori_w, ori_h))
-                heatmap = cv2.applyColorMap(CAM, cv2.COLORMAP_JET)
+                heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
                 img_show = heatmap * 0.3 + img_show * 0.5
                 if out_dir:
                     out_file = osp.join(out_dir, img_meta['ori_filename'])
