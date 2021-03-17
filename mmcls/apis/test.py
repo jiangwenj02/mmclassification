@@ -28,13 +28,20 @@ def single_gpu_test(model,
         features.append(output.clone().detach())
     handle = model._modules['module'].backbone.layer4.register_forward_hook(hook)
     for i, data in enumerate(data_loader):
-        
+        features = []
         with torch.no_grad():
             result = model(return_loss=False, **data)
-
+        features = features[0]
+        n, c, feat_w, feat_h = features.shape
+        features = features.view(n, c, -1)
+        weight = weight.unsqueeze(0).repeat(n, 1, 1)
         import pdb
         pdb.set_trace()
-        features = []
+        heatmap = torch.matmul(weight, features)
+        
+        inds = [item.argmax() for item in result]
+
+        
         
         batch_size = len(result)
         results.extend(result)
@@ -55,6 +62,8 @@ def single_gpu_test(model,
 
                 ori_h, ori_w = img_meta['ori_shape'][:-1]
                 img_show = mmcv.imresize(img_show, (ori_w, ori_h))
+                heatmap = torch.matmul(weight, features)
+                heatmap = weight[inds[i]] * features[0][i]
 
                 if out_dir:
                     out_file = osp.join(out_dir, img_meta['ori_filename'])
