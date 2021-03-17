@@ -48,8 +48,8 @@ def single_gpu_test(model,
             features = features[0]
             n, c, feat_w, feat_h = features.shape
             features = features.view(n, c, -1)
-            weight = weight.unsqueeze(0).repeat(n, 1, 1)
-            heatmaps = torch.matmul(weight, features)
+            weights = weight.unsqueeze(0).repeat(n, 1, 1)
+            heatmaps = torch.matmul(weights, features)
             heatmaps = heatmaps.view(n, -1, feat_w, feat_h).cpu().numpy()
             inds = [item.argmax() for item in result]
 
@@ -66,7 +66,7 @@ def single_gpu_test(model,
                 heatmap = np.uint8(255 * heatmap)
                 heatmap = mmcv.imresize(heatmap, (ori_w, ori_h))
                 heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-                img_show = heatmap * 0.3 + img_show * 0.5
+                img_show = heatmap * 0.2 + img_show * 0.8
                 if out_dir:
                     out_file = osp.join(out_dir, img_meta['ori_filename'])
                 else:
