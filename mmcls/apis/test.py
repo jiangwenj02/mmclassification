@@ -10,6 +10,7 @@ import torch
 import torch.distributed as dist
 from mmcv.image import tensor2imgs
 from mmcv.runner import get_dist_info
+import cv2
 
 
 def single_gpu_test(model,
@@ -21,10 +22,16 @@ def single_gpu_test(model,
     results = []
     dataset = data_loader.dataset
     prog_bar = mmcv.ProgressBar(len(dataset))
+    weight = model._modules['module'].head.fc.weight.detach()
+    features = []
+    def hook(module, input, output): 
+        features.append(output.clone().detach())
+    handle = model._modules['module'].backbone.layer4.register_forward_hook(hook)
     for i, data in enumerate(data_loader):
+        features = []
         with torch.no_grad():
-            result = model(return_loss=False, **data)
-
+            result = model(return_loss=False, **data)       
+        
         batch_size = len(result)
         results.extend(result)
 
@@ -38,6 +45,14 @@ def single_gpu_test(model,
             imgs = tensor2imgs(data['img'], **img_metas[0]['img_norm_cfg'])
             assert len(imgs) == len(img_metas)
 
+            features = features[0]
+            n, c, feat_w, feat_h = features.shape
+            features = features.view(n, c, -1)
+            weights = weight.unsqueeze(0).repeat(n, 1, 1)
+            heatmaps = torch.matmul(weights, features)
+            heatmaps = heatmaps.view(n, -1, feat_w, feat_h).cpu().numpy()
+            inds = [item.argmax() for item in result]
+
             for i, (img, img_meta) in enumerate(zip(imgs, img_metas)):
                 h, w, _ = img_meta['img_shape']
                 img_show = img[:h, :w, :]
@@ -45,6 +60,13 @@ def single_gpu_test(model,
                 ori_h, ori_w = img_meta['ori_shape'][:-1]
                 img_show = mmcv.imresize(img_show, (ori_w, ori_h))
 
+                heatmap = heatmaps[i, 0, :, :]
+                heatmap = heatmap - np.min(heatmap)
+                heatmap = heatmap / np.max(heatmap)
+                heatmap = np.uint8(255 * heatmap)
+                heatmap = mmcv.imresize(heatmap, (ori_w, ori_h))
+                heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+                img_show = heatmap * 0.4 + img_show * 0.6
                 if out_dir:
                     out_file = osp.join(out_dir, img_meta['ori_filename'])
                 else:
