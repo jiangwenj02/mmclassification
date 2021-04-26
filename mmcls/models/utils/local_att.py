@@ -74,9 +74,9 @@ class LocalAtten(nn.Module):
         x_ref = F.pad(x_ref, (self.padding_size,self.padding_size,self.padding_size,self.padding_size), "constant", 0)
         x_ref = x_ref.unfold(2, self.atten_size, 1)
         x_ref = x_ref.unfold(3, self.atten_size, 1)
-        x_ref = x_ref.permurate(0, 2, 3, 1, 4, 5).view(N, H * W, self.inter_channels, self.atten_size * self.atten_size) # N, HW, C, SIZE^2
+        x_ref = x_ref.permute(0, 2, 3, 1, 4, 5).view(N, H * W, self.inter_channels, self.atten_size * self.atten_size) # N, HW, C, SIZE^2
 
-        x_attn = self.conv2(x).permurate(0, 2, 3, 1).view(N, H*W, -1, 1) #N, HW, SIZE^2, 1
+        x_attn = self.conv2(x).permute(0, 2, 3, 1).view(N, H*W, -1, 1) #N, HW, SIZE^2, 1
         x_attn = x_attn.softmax(-1)
 
         x_ref = torch.matmul(x_ref, x_attn) #N, HW, C, 1
