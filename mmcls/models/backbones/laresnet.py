@@ -6,7 +6,7 @@ from .resnet import Bottleneck, ResLayer, ResNet, BasicBlock
 from .resnet_cifar import ResNet_CIFAR
 
 
-class LABottleneck(BasicBlock):
+class LABasicBlock(BasicBlock):
     """SEBottleneck block for SEResNet.
 
     Args:
@@ -16,7 +16,7 @@ class LABottleneck(BasicBlock):
     """
 
     def __init__(self, in_channels, out_channels, se_ratio=16, **kwargs):
-        super(LABottleneck, self).__init__(in_channels, out_channels, **kwargs)
+        super(LABasicBlock, self).__init__(in_channels, out_channels, **kwargs)
         self.la_layer = LocalAtten(out_channels, ratio=se_ratio)
 
     def forward(self, x):
@@ -106,9 +106,11 @@ class LAResNet(ResNet_CIFAR):
     """
 
     arch_settings = {
-        50: (LABottleneck, (3, 4, 6, 3)),
-        101: (LABottleneck, (3, 4, 23, 3)),
-        152: (LABottleneck, (3, 8, 36, 3))
+        18: (LABasicBlock, (2, 2, 2, 2)),
+        34: (LABasicBlock, (3, 4, 6, 3)),
+        # 50: (Bottleneck, (3, 4, 6, 3)),
+        # 101: (Bottleneck, (3, 4, 23, 3)),
+        # 152: (Bottleneck, (3, 8, 36, 3))
     }
 
     def __init__(self, depth, se_ratio=16, **kwargs):
