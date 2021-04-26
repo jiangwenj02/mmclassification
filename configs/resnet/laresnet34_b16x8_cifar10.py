@@ -4,3 +4,5 @@ _base_ = [
 ]
 
 data = dict(workers_per_gpu=0,)
+
+resume_from = 'work_dirs/laresnet34_b16x8_cifar10/latest.pth'
