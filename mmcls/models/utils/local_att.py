@@ -45,7 +45,7 @@ class LocalAtten(nn.Module):
             conv_cfg=conv_cfg,
             act_cfg=act_cfg[0])
         self.conv2 = ConvModule(
-            in_channels=self.inter_channels,
+            in_channels=channels,
             out_channels=self.atten_size * self.atten_size,
             kernel_size=1,
             stride=1,
