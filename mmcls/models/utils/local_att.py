@@ -77,7 +77,7 @@ class LocalAtten(nn.Module):
         x_ref = x_ref.permute(0, 2, 3, 1, 4, 5).reshape(N, H * W, self.inter_channels, self.atten_size * self.atten_size) # N, HW, C, SIZE^2
 
         x_attn = self.conv2(x).permute(0, 2, 3, 1).reshape(N, H*W, -1, 1) #N, HW, SIZE^2, 1
-        x_attn = x_attn.softmax(-1)
+        x_attn = x_attn.softmax(-2)
 
         x_ref = torch.matmul(x_ref, x_attn) #N, HW, C, 1
         x_ref = x_ref.reshape(N, H, W, -1).permute(0, 3, 1, 2)
