@@ -22,11 +22,12 @@ def single_gpu_test(model,
     results = []
     dataset = data_loader.dataset
     prog_bar = mmcv.ProgressBar(len(dataset))
-    weight = model._modules['module'].head.fc.weight.detach()
-    features = []
-    def hook(module, input, output): 
-        features.append(output.clone().detach())
-    handle = model._modules['module'].backbone.layer4.register_forward_hook(hook)
+    if show or out_dir:
+        weight = model._modules['module'].head.fc.weight.detach()
+        features = []
+        def hook(module, input, output): 
+            features.append(output.clone().detach())
+        handle = model._modules['module'].backbone.layer4.register_forward_hook(hook)
     for i, data in enumerate(data_loader):
         features = []
         with torch.no_grad():
