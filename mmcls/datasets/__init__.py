@@ -9,10 +9,11 @@ from .multi_label import MultiLabelDataset
 from .samplers import DistributedSampler
 from .voc import VOC
 from .diseased import Diseased
+from .cancer import Cancer
 
 __all__ = [
     'BaseDataset', 'ImageNet', 'CIFAR10', 'CIFAR100', 'MNIST', 'FashionMNIST',
     'VOC', 'MultiLabelDataset', 'build_dataloader', 'build_dataset', 'Compose',
-    'DistributedSampler', 'ConcatDataset', 'RepeatDataset', 'Diseased',
+    'DistributedSampler', 'ConcatDataset', 'RepeatDataset', 'Diseased', 'Cancer',
     'ClassBalancedDataset', 'DATASETS', 'PIPELINES'
 ]
