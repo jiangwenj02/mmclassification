@@ -9,4 +9,6 @@ model = dict(
         topk=(1,))
 )
 
+
+optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
 load_from = 'https://download.openmmlab.com/mmclassification/v0/shufflenet_v2/shufflenet_v2_batch1024_imagenet_20200812-5bf4721e.pth' 
