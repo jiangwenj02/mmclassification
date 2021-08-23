@@ -3,8 +3,9 @@ _base_ = [
     '../_base_/schedules/imagenet_bs256_coslr.py', '../_base_/default_runtime.py'
 ]
 model = dict(
-    pretrained='torchvision://resnet50',
     head=dict(
         num_classes=2,
         topk=(1,))
 )
+
+load_from = 'https://download.openmmlab.com/mmclassification/v0/resnet/resnet50_batch256_imagenet_20200708-cfb998bf.pth' 

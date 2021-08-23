@@ -8,3 +8,5 @@ model = dict(
         num_classes=2,
         topk=(1,))
 )
+
+load_from = 'https://download.openmmlab.com/mmclassification/v0/shufflenet_v2/shufflenet_v2_batch1024_imagenet_20200812-5bf4721e.pth' 
