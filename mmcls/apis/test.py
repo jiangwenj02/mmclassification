@@ -27,7 +27,8 @@ def single_gpu_test(model,
         features = []
         def hook(module, input, output): 
             features.append(output.clone().detach())
-        handle = model._modules['module'].backbone.layer4.register_forward_hook(hook)
+        # handle = model._modules['module'].backbone.layer4.register_forward_hook(hook)
+        handle = model._modules['module'].backbone.register_forward_hook(hook)
     for i, data in enumerate(data_loader):
         features = []
         with torch.no_grad():
