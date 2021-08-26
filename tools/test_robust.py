@@ -153,18 +153,30 @@ def main():
                     FPRs.append(v)
                 # print(f'\n{k} : {v:.2f}')
                 # print(k, " : ", v)
-            print('best: ', f1_best_str)
-            args.metric_options['thrs'] = f1_best_thr
-            results = dataset.evaluate(outputs, args.metrics,
-                                       args.metric_options)
-            for k, v in results.items():
-                print(k, " : ", v)
-            args.metric_options['average_mode'] = 'none'
-            results = dataset.evaluate(outputs, args.metrics,
-                                       args.metric_options)
-            for k, v in results.items():
-                print(k, " : ", v)
-            # print('best: ', f1_best_str)
+            if 'TPR' in args.metrics:                
+                import matplotlib.pyplot as plt
+                plt.figure(figsize=(10,10))
+                plt.plot(FPRs, TPRs, color='darkorange',
+                    lw=2, label='ROC curve')
+                plt.xlabel('False Positive Rate')
+                plt.ylabel('True Positive Rate')
+                plt.title('Receiver operating characteristic example')
+                plt.legend(loc="lower right")
+                plt.savefig(args.checkpoint.replace('.pth', '.jpg'))
+
+            if 'f1_score' in args.metrics:
+                print('best: ', f1_best_str)
+                args.metric_options['thrs'] = f1_best_thr
+                results = dataset.evaluate(outputs, args.metrics,
+                                        args.metric_options)
+                for k, v in results.items():
+                    print(k, " : ", v)
+                args.metric_options['average_mode'] = 'none'
+                results = dataset.evaluate(outputs, args.metrics,
+                                        args.metric_options)
+                for k, v in results.items():
+                    print(k, " : ", v)
+                # print('best: ', f1_best_str)
         else:
             warnings.warn('Evaluation metrics are not specified.')
             scores = np.vstack(outputs)
