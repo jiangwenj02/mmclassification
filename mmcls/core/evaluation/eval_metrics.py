@@ -96,6 +96,7 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
     TPRs = []
     FPRs = []
     for thr in thrs:
+        thr = 0.0
         # Only prediction values larger than thr are counted as positive
         _pred_label = pred_label.copy()
         if thr is not None:
@@ -117,8 +118,11 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
 
         FPR = (pred_positive.sum(0) -  (pred_positive & gt_positive).sum(0)) / np.maximum(
             gt_negtive.sum(0), 1)
+        print(gt_positive.sum(0), gt_negtive.sum(0))
         print(thr, pred_positive.sum(0) -  (pred_positive & gt_positive).sum(0),np.maximum(
             gt_negtive.sum(0), 1) )
+        import pdb
+        pdb.set_trace()
         if average_mode == 'macro':
             precision = float(precision.mean())
             recall = float(recall.mean())
