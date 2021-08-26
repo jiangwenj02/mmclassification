@@ -93,6 +93,8 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
     recalls = []
     f1_scores = []
     f2_scores = []
+    TPRs = []
+    FPRs = []
     for thr in thrs:
         # Only prediction values larger than thr are counted as positive
         _pred_label = pred_label.copy()
@@ -100,6 +102,7 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
             _pred_label[pred_score <= thr] = -1
         pred_positive = label == _pred_label.reshape(-1, 1)
         gt_positive = label == target.reshape(-1, 1)
+        gt_negtive = label != target.reshape(-1, 1)
         precision = (pred_positive & gt_positive).sum(0) / np.maximum(
             pred_positive.sum(0), 1) * 100
         recall = (pred_positive & gt_positive).sum(0) / np.maximum(
@@ -108,20 +111,30 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
                                                        1e-20)
         f2_score = 5 * precision * recall / np.maximum(4 * precision + recall,
                                                        1e-20)
+        TPR = (pred_positive & gt_positive).sum(0) / np.maximum(
+            gt_negtive.sum(0), 1) * 100
+
+        FPR = (pred_positive.sum(0) -  (pred_positive & gt_positive).sum(0)) / np.maximum(
+            gt_positive.sum(0), 1) * 100
+        
         if average_mode == 'macro':
             precision = float(precision.mean())
             recall = float(recall.mean())
             f1_score = float(f1_score.mean())
             f2_score = float(f2_score.mean())
+            TPR = float(TPR.mean())
+            FPR = float(FPR.mean())
         precisions.append(precision)
         recalls.append(recall)
         f1_scores.append(f1_score)
         f2_scores.append(f2_score)
+        TPRs.append(TPR)
+        FPRs.append(FPR)
 
     if return_single:
-        return precisions[0], recalls[0], f1_scores[0], f2_scores[0]
+        return precisions[0], recalls[0], f1_scores[0], f2_scores[0], TPRs[0], FPRs[0]
     else:
-        return precisions, recalls, f1_scores, f2_scores
+        return precisions, recalls, f1_scores, f2_scores, TPRs, FPRs
 
 
 def precision(pred, target, average_mode='macro', thrs=None):

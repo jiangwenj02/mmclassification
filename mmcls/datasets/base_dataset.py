@@ -181,7 +181,7 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
             eval_results['support'] = support_value
             eval_results['cm'] = cm
 
-        precision_recall_f1_keys = ['precision', 'recall', 'f1_score', 'f2_score']
+        precision_recall_f1_keys = ['precision', 'recall', 'f1_score', 'f2_score', 'TPR', 'FPR']
         if len(set(metrics) & set(precision_recall_f1_keys)) != 0:
             precision_recall_f1_values = precision_recall_f1(
                 results, gt_labels, average_mode=average_mode, thrs=thrs)
