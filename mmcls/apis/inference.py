@@ -35,6 +35,7 @@ def init_model(config, checkpoint=None, device='cuda:0', options=None):
     model = build_classifier(config.model)
     if checkpoint is not None:
         map_loc = 'cpu' if device == 'cpu' else None
+        print(model, checkpoint, map_loc)
         checkpoint = load_checkpoint(model, checkpoint, map_location=map_loc)
         if 'CLASSES' in checkpoint['meta']:
             model.CLASSES = checkpoint['meta']['CLASSES']
