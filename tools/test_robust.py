@@ -146,14 +146,13 @@ def main():
                     print(k)
                     f1_best_thr = float(k.split('_')[-1])
                 if 'TPR' in k:
-                    print(k)
                     TPRs.append(v)
                 if 'FPR' in k:
-                    print(k)
                     FPRs.append(v)
                 # print(f'\n{k} : {v:.2f}')
                 # print(k, " : ", v)
-            if 'TPR' in args.metrics:                
+            if 'TPR' in args.metrics:      
+                print(FPRs)          
                 import matplotlib.pyplot as plt
                 plt.figure(figsize=(10,10))
                 plt.plot(FPRs, TPRs, color='darkorange',

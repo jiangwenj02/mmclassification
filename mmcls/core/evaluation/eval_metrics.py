@@ -113,11 +113,12 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
                                                        1e-20)
 
         TPR = (pred_positive & gt_positive).sum(0) / np.maximum(
-            gt_positive.sum(0), 1) * 100
+            gt_positive.sum(0), 1)
 
         FPR = (pred_positive.sum(0) -  (pred_positive & gt_positive).sum(0)) / np.maximum(
-            gt_negtive.sum(0), 1) * 100
-        
+            gt_negtive.sum(0), 1)
+        print(thr, pred_positive.sum(0) -  (pred_positive & gt_positive).sum(0),np.maximum(
+            gt_negtive.sum(0), 1) )
         if average_mode == 'macro':
             precision = float(precision.mean())
             recall = float(recall.mean())
