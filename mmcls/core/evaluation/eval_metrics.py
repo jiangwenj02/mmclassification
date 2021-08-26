@@ -111,11 +111,13 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
                                                        1e-20)
         f2_score = 5 * precision * recall / np.maximum(4 * precision + recall,
                                                        1e-20)
+        import pdb
+        pdb.set_trace()
         TPR = (pred_positive & gt_positive).sum(0) / np.maximum(
-            gt_negtive.sum(0), 1) * 100
+            gt_positive.sum(0), 1) * 100
 
         FPR = (pred_positive.sum(0) -  (pred_positive & gt_positive).sum(0)) / np.maximum(
-            gt_positive.sum(0), 1) * 100
+            gt_negtive.sum(0), 1) * 100
         
         if average_mode == 'macro':
             precision = float(precision.mean())
