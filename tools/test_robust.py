@@ -138,6 +138,8 @@ def main():
             f1_best = 0
             f1_best_thr = 0
             for k, v in results.items():
+                import pdb
+                pdb.set_trace()
                 if 'f1_score' in k and v > f1_best:
                     f1_best = v
                     f1_best_str = f'\n{k} : {v:.2f}'
