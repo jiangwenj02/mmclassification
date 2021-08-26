@@ -130,7 +130,7 @@ def main():
     rank, _ = get_dist_info()
     if rank == 0:
         if args.metrics:
-            threshold_list = np.arange(0, 1.01, 0.01).tolist()
+            threshold_list = np.arange(1.00, -0.01, -0.01).tolist()
             threshold_list = tuple(threshold_list)
             args.metric_options['thrs'] = threshold_list            
             results = dataset.evaluate(outputs, args.metrics,
