@@ -138,7 +138,7 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
         else:
             metrics = metric
         allowed_metrics = [
-            'accuracy', 'precision', 'recall', 'f1_score', 'f2_score', 'support'
+            'accuracy', 'precision', 'recall', 'f1_score', 'f2_score', 'support', 'TPR', 'FPR'
         ]
         eval_results = {}
         results = np.vstack(results)
