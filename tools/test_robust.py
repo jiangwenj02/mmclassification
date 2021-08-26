@@ -137,12 +137,20 @@ def main():
                                        args.metric_options)
             f1_best = 0
             f1_best_thr = 0
+            TPRs = []
+            FPRs = []
             for k, v in results.items():
                 if 'f1_score' in k and v > f1_best:
                     f1_best = v
                     f1_best_str = f'\n{k} : {v:.2f}'
                     print(k)
                     f1_best_thr = float(k.split('_')[-1])
+                if 'TPR' in k:
+                    print(k)
+                    TPRs.append(v)
+                if 'FPR' in k:
+                    print(k)
+                    FPRs.append(v)
                 # print(f'\n{k} : {v:.2f}')
                 # print(k, " : ", v)
             print('best: ', f1_best_str)
