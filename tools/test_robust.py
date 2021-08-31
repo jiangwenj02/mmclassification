@@ -130,33 +130,52 @@ def main():
     rank, _ = get_dist_info()
     if rank == 0:
         if args.metrics:
-            threshold_list = np.arange(0, 1, 0.01).tolist()
+            threshold_list = np.arange(1.00, -0.01, -0.01).tolist()
             threshold_list = tuple(threshold_list)
             args.metric_options['thrs'] = threshold_list            
             results = dataset.evaluate(outputs, args.metrics,
                                        args.metric_options)
             f1_best = 0
             f1_best_thr = 0
+            TPRs = []
+            FPRs = []
             for k, v in results.items():
                 if 'f1_score' in k and v > f1_best:
                     f1_best = v
                     f1_best_str = f'\n{k} : {v:.2f}'
                     print(k)
                     f1_best_thr = float(k.split('_')[-1])
+                if 'TPR' in k:
+                    TPRs.append(v)
+                if 'FPR' in k:
+                    FPRs.append(v)
                 # print(f'\n{k} : {v:.2f}')
                 # print(k, " : ", v)
-            print('best: ', f1_best_str)
-            args.metric_options['thrs'] = f1_best_thr
-            results = dataset.evaluate(outputs, args.metrics,
-                                       args.metric_options)
-            for k, v in results.items():
-                print(k, " : ", v)
-            args.metric_options['average_mode'] = 'none'
-            results = dataset.evaluate(outputs, args.metrics,
-                                       args.metric_options)
-            for k, v in results.items():
-                print(k, " : ", v)
-            # print('best: ', f1_best_str)
+            if 'TPR' in args.metrics:      
+                print(FPRs)          
+                import matplotlib.pyplot as plt
+                plt.figure(figsize=(10,10))
+                plt.plot(FPRs, TPRs, color='darkorange',
+                    lw=2, label='ROC curve')
+                plt.xlabel('False Positive Rate')
+                plt.ylabel('True Positive Rate')
+                plt.title('Receiver operating characteristic example')
+                plt.legend(loc="lower right")
+                plt.savefig(args.checkpoint.replace('.pth', '.jpg'))
+
+            if 'f1_score' in args.metrics:
+                print('best: ', f1_best_str)
+                args.metric_options['thrs'] = f1_best_thr
+                results = dataset.evaluate(outputs, args.metrics,
+                                        args.metric_options)
+                for k, v in results.items():
+                    print(k, " : ", v)
+                args.metric_options['average_mode'] = 'none'
+                results = dataset.evaluate(outputs, args.metrics,
+                                        args.metric_options)
+                for k, v in results.items():
+                    print(k, " : ", v)
+                # print('best: ', f1_best_str)
         else:
             warnings.warn('Evaluation metrics are not specified.')
             scores = np.vstack(outputs)
