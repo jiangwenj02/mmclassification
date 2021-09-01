@@ -148,8 +148,10 @@ def main():
             results = copy.deepcopy(results_all[0])
             for idx, item in enumerate(results_all):
                 for k,v in item.items():
-                    if v is not float and v.shape[0] > 1:
-                        results[k][idx] = v[idx]
+                    if v is not float:
+                        print(k,v,type(v))
+                    # if v is not float and v.shape[0] > 1:
+                    #     results[k][idx] = v[idx]
             for k,v in results.items():
                 if v is not float and v.shape[0] > 1:
                     print(k,v)
