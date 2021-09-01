@@ -8,7 +8,7 @@ import torch
 from mmcv import DictAction
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import get_dist_info, init_dist, load_checkpoint
-
+import copy
 from mmcls.apis import multi_gpu_test, single_gpu_test
 from mmcls.core import wrap_fp16_model
 from mmcls.datasets import build_dataloader, build_dataset
@@ -193,12 +193,10 @@ def main():
                 cls = outputs[0].shape[0]
                 for i in range(cls):
                     print('-----------cls------------', i)
-                    outputs_s = []
-                    for j in range(len(outputs)):
-                        x = outputs[j]
-                        x[:i] = 0
-                        x[i+1:] = 0
-                        outputs_s.append(x)
+                    outputs_s = copy.deepcopy(outputs)
+                    for j in range(len(outputs_s)):
+                        outputs_s[j][:i] = 0
+                        outputs_s[j][i+1:] = 0
                     args.metric_options['thrs'] = recall_best_thr
                     results = dataset.evaluate(outputs_s, args.metrics,
                                             args.metric_options)
