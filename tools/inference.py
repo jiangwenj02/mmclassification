@@ -18,7 +18,6 @@ import mmcv
 import time
 from mmcls.apis import init_model, inference_model
 import glob
-
 class Evaluator:
     def __init__(self, opt):
 
@@ -38,7 +37,7 @@ class Evaluator:
 
     def test_images(self):
         self._init_detector()
-        for index, image_file in enumerate(glob.glob(self.image_root + '*.jpg')):
+        for index, image_file in tqdm(enumerate(glob.glob(self.image_root + '*.jpg'))):
             img = mmcv.imread(image_file)
             # Inference
             result = inference_model(self.model, img)
