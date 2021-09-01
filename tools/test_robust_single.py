@@ -152,9 +152,7 @@ def main():
                     if type(v) is list:
                         results[k][idx] = v[idx]
             for k,v in results.items():
-                print(k,v)
                 if type(v) is list:
-                    print(k,v)
                     results[k] = np.mean(results[k])
             f1_best = 0
             f1_best_thr = 0
