@@ -138,15 +138,17 @@ def main():
             for i in range(cls):
                 print('-----------cls------------', i)
                 outputs_s = copy.deepcopy(outputs)
+                for j in range(len(outputs_s)):
+                    outputs_s[j][:i] = -0.1
+                    outputs_s[j][i+1:] = -0.1
                 results = dataset.evaluate(outputs_s, args.metrics,
                                         args.metric_options)
+                print(results)
                 results_all.append(results)
             results = copy.deepcopy(results_all[0])
             for idx, item in enumerate(results_all):
                 for k,v in item.items():
-                    if type(v) is list:
-                        results[k][idx] = v[idx]
-            print(results)
+                    results[k][idx] = v[idx]
             f1_best = 0
             f1_best_thr = 0
             recall_best = 0
