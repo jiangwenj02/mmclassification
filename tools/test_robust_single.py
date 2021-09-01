@@ -148,7 +148,9 @@ def main():
             results = copy.deepcopy(results_all[0])
             for idx, item in enumerate(results_all):
                 for k,v in item.items():
-                    results[k][idx] = v[idx]
+                    print(k,v)
+                    if type(v) is list:
+                        results[k][idx] = v[idx]
             print(results)
             f1_best = 0
             f1_best_thr = 0
