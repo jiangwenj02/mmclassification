@@ -32,7 +32,7 @@ class Evaluator:
         self.device = self.opt.device
 
         # Load model
-        model = init_model(self.opt.config, checkpoint=self.opt.weights[0], device='cpu')
+        model = init_model(self.opt.config, checkpoint=self.opt.weights, device='cpu')
         self.names = model.CLASSES
         self.model = model.to(self.device)
 
