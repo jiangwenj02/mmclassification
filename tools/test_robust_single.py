@@ -151,7 +151,9 @@ def main():
                     if v.shape[0] > 1:
                         results[k][idx] = v[idx]
             for k,v in results.items():
-                results[k] = np.mean(results[k])
+                if v.shape[0] > 1:
+                    print(k,v)
+                    results[k] = np.mean(results[k])
             f1_best = 0
             f1_best_thr = 0
             recall_best = 0
