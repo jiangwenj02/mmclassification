@@ -54,6 +54,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="video_evaluation")
     parser.add_argument('--image_path', type=str, default='/data3/zzhang/tmp/gastro_cancer/test', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--save_path', type=str, default='/data3/zzhang/tmp/gastro_cancer_0901/', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--config', nargs='+', type=str, default='/data3/zzhang/mmclassification/configs/diseased/resnet50_cancer.py', help='model.pt path(s)')
+    parser.add_argument('--weights', nargs='+', type=str, default='/data3/zzhang/mmclassification/work_dirs/resnet50_cancer/latest.pth', help='model.pt path(s)')
     parser.add_argument('--device', default='cuda:0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     args = parser.parse_args()
     evaluator = Evaluator(args)
