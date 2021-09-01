@@ -40,6 +40,7 @@ class Evaluator:
         self._init_detector()
         for index, image_file in enumerate(glob.glob(self.image_root)):
             img = mmcv.imread(image_file)
+            img = torch.from_numpy(img).cuda()
             # Inference
             result = inference_model(self.model, img)
             img = self.model.show_result(img, result, show=False)
@@ -53,6 +54,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="video_evaluation")
     parser.add_argument('--image_path', type=str, default='/data3/zzhang/tmp/gastro_cancer/test', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--save_path', type=str, default='/data3/zzhang/tmp/gastro_cancer_0901/', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--device', default='cuda:0', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     args = parser.parse_args()
     evaluator = Evaluator(args)
     evaluator.test_images()
