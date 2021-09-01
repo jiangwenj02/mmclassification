@@ -149,7 +149,8 @@ def main():
                     TPRs.append(v)
                 if 'FPR' in k:
                     FPRs.append(v)
-                # print(f'\n{k} : {v:.2f}')
+                if 'f1_score' in k:
+                    print(f'\n{k} : {v:.2f}')
                 # print(k, " : ", v)
             if 'TPR' in args.metrics:      
                 print(FPRs)          
