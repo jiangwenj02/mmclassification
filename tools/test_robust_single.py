@@ -141,9 +141,9 @@ def main():
                 for j in range(len(outputs_s)):
                     outputs_s[j][:i] = -0.1
                     outputs_s[j][i+1:] = -0.1
+                args.metric_options['average_mode'] = 'none'
                 results = dataset.evaluate(outputs_s, args.metrics,
                                         args.metric_options)
-                print(results)
                 results_all.append(results)
             results = copy.deepcopy(results_all[0])
             for idx, item in enumerate(results_all):
