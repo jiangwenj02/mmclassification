@@ -143,15 +143,13 @@ def main():
                 if 'f1_score' in k and v > f1_best:
                     f1_best = v
                     f1_best_str = f'\n{k} : {v:.2f}'
-                    print(k)
                     f1_best_thr = float(k.split('_')[-1])
                 if 'TPR' in k:
                     TPRs.append(v)
                 if 'FPR' in k:
                     FPRs.append(v)
-                if 'f1_score' in k:
-                    print(f'\n{k} : {v:.2f}')
                 # print(k, " : ", v)
+                print(f'\n{k} : {v:.2f}')
             if 'TPR' in args.metrics:      
                 print(FPRs)          
                 import matplotlib.pyplot as plt
