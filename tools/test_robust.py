@@ -152,7 +152,7 @@ def main():
                     FPRs.append(v)
                 if 'recall' in k and v > recall_best:
                     recall_best = v
-                    recall_best_thr = f'\n{k} : {v:.2f}'
+                    recall_best_str = f'\n{k} : {v:.2f}'
                     recall_best_thr = float(k.split('_')[-1])
                 if 'TPR' in k:
                     TPRs.append(v)
@@ -174,7 +174,7 @@ def main():
 
             if 'recall' in args.metrics:
                 print('-------------recall-----------------')
-                print('best: ', recall_best_thr)
+                print('best: ', recall_best_str)
                 args.metric_options['thrs'] = recall_best_thr
                 results = dataset.evaluate(outputs, args.metrics,
                                         args.metric_options)
@@ -191,6 +191,8 @@ def main():
                 print('-------------f1best-----------------')
                 print('best: ', f1_best_str)
                 args.metric_options['thrs'] = f1_best_thr
+                import pdb
+                pdb.set_trace()
                 results = dataset.evaluate(outputs, args.metrics,
                                         args.metric_options)
                 for k, v in results.items():
