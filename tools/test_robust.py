@@ -186,13 +186,34 @@ def main():
                 for k, v in results.items():
                     print(k, " : ", v)
                 # print('best: ', f1_best_str)
+
+            if 'recall' in args.metrics:
+                print('-------------recall-single-----------------')
+                print('best: ', recall_best_str)
+                cls = outputs[0].shape[0]
+                for i in range(cls):
+                    print('-----------cls------------', i)
+                    outputs_s = []
+                    for j in range(len(outputs)):
+                        x = outputs[j]
+                        x[:i] = 0
+                        x[i+1:] = 0
+                        outputs_s.append(x)
+                    args.metric_options['thrs'] = recall_best_thr
+                    results = dataset.evaluate(outputs_s, args.metrics,
+                                            args.metric_options)
+                    for k, v in results.items():
+                        print(k, " : ", v)
+                    args.metric_options['average_mode'] = 'none'
+                    results = dataset.evaluate(outputs_s, args.metrics,
+                                            args.metric_options)
+                    for k, v in results.items():
+                        print(k, " : ", v)
             
             if 'f1_score' in args.metrics:
                 print('-------------f1best-----------------')
                 print('best: ', f1_best_str)
                 args.metric_options['thrs'] = f1_best_thr
-                import pdb
-                pdb.set_trace()
                 results = dataset.evaluate(outputs, args.metrics,
                                         args.metric_options)
                 for k, v in results.items():
