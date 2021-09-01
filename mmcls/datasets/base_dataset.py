@@ -174,6 +174,7 @@ class BaseDataset(Dataset, metaclass=ABCMeta):
                 eval_results.update(
                     {k: v.item()
                      for k, v in eval_results_.items()})
+            print(acc)
 
         if 'support' in metrics:
             support_value,cm = support(
