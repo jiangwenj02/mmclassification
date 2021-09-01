@@ -137,6 +137,8 @@ def main():
                                        args.metric_options)
             f1_best = 0
             f1_best_thr = 0
+            recall_best = 0
+            recall_best_thr = 0
             TPRs = []
             FPRs = []
             for k, v in results.items():
@@ -144,6 +146,14 @@ def main():
                     f1_best = v
                     f1_best_str = f'\n{k} : {v:.2f}'
                     f1_best_thr = float(k.split('_')[-1])
+                if 'TPR' in k:
+                    TPRs.append(v)
+                if 'FPR' in k:
+                    FPRs.append(v)
+                if 'recall' in k and v > recall_best:
+                    recall_best = v
+                    recall_best_thr = f'\n{k} : {v:.2f}'
+                    recall_best_thr = float(k.split('_')[-1])
                 if 'TPR' in k:
                     TPRs.append(v)
                 if 'FPR' in k:
@@ -162,7 +172,23 @@ def main():
                 plt.legend(loc="lower right")
                 plt.savefig(args.checkpoint.replace('.pth', '.jpg'))
 
+            if 'recall' in args.metrics:
+                print('-------------recall-----------------')
+                print('best: ', recall_best_thr)
+                args.metric_options['thrs'] = recall_best_thr
+                results = dataset.evaluate(outputs, args.metrics,
+                                        args.metric_options)
+                for k, v in results.items():
+                    print(k, " : ", v)
+                args.metric_options['average_mode'] = 'none'
+                results = dataset.evaluate(outputs, args.metrics,
+                                        args.metric_options)
+                for k, v in results.items():
+                    print(k, " : ", v)
+                # print('best: ', f1_best_str)
+            
             if 'f1_score' in args.metrics:
+                print('-------------f1best-----------------')
                 print('best: ', f1_best_str)
                 args.metric_options['thrs'] = f1_best_thr
                 results = dataset.evaluate(outputs, args.metrics,
@@ -174,7 +200,6 @@ def main():
                                         args.metric_options)
                 for k, v in results.items():
                     print(k, " : ", v)
-                # print('best: ', f1_best_str)
         else:
             warnings.warn('Evaluation metrics are not specified.')
             scores = np.vstack(outputs)
