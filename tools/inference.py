@@ -51,8 +51,8 @@ class Evaluator:
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description="video_evaluation")
-    parser.add_argument('--video_path', type=str, default='/data2/qilei_chen/DATA/erosive_ulcer_videos', help='source')  # file/folder, 0 for webcam
-    parser.add_argument('--save_path', type=str, default='/data3/zzhang/tmp/erosive_ulcer_videos0615/', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--video_path', type=str, default='/data3/zzhang/tmp/gastro_cancer/test', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--save_path', type=str, default='/data3/zzhang/tmp/gastro_cancer_0901/', help='source')  # file/folder, 0 for webcam
     args = parser.parse_args()
     evaluator = Evaluator(args)
     evaluator.test_images()
