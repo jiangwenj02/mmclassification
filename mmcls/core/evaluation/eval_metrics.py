@@ -96,7 +96,6 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
     TPRs = []
     FPRs = []
     for thr in thrs:
-        thr = 0.0
         # Only prediction values larger than thr are counted as positive
         _pred_label = pred_label.copy()
         if thr is not None:

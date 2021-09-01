@@ -149,7 +149,7 @@ def main():
                 if 'FPR' in k:
                     FPRs.append(v)
                 # print(k, " : ", v)
-                print(f'\n{k} : {v:.2f}')
+                # print(f'\n{k} : {v:.2f}')
             if 'TPR' in args.metrics:      
                 print(FPRs)          
                 import matplotlib.pyplot as plt
