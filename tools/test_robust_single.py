@@ -148,10 +148,12 @@ def main():
             results = copy.deepcopy(results_all[0])
             for idx, item in enumerate(results_all):
                 for k,v in item.items():
-                    print(k,v)
                     if type(v) is list:
                         results[k][idx] = v[idx]
-            print(results)
+            for k,v in results.items():
+                if type(v) is list:
+                    print(k,v)
+                    results[k] = np.mean(results[k])
             f1_best = 0
             f1_best_thr = 0
             recall_best = 0
