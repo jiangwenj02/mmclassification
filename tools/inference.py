@@ -38,7 +38,7 @@ class Evaluator:
 
     def test_images(self):
         self._init_detector()
-        for index, image_file in enumerate(glob.glob(self.image_root)):
+        for index, image_file in enumerate(glob.glob(self.image_root + '*.jpg')):
             img = mmcv.imread(image_file)
             img = torch.from_numpy(img).cuda()
             # Inference
