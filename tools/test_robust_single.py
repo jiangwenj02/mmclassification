@@ -148,6 +148,7 @@ def main():
             results = copy.deepcopy(results_all[0])
             for idx, item in enumerate(results_all):
                 for k,v in item.items():
+                    print(type(v))
                     if type(v) is list:
                         results[k][idx] = v[idx]
             for k,v in results.items():
