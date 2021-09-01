@@ -149,6 +149,7 @@ def main():
             for idx, item in enumerate(results_all):
                 for k,v in item.items():
                     results[k][idx] = v[idx]
+            print(results)
             f1_best = 0
             f1_best_thr = 0
             recall_best = 0
