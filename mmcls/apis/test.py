@@ -41,7 +41,6 @@ def single_gpu_test(model,
             scores = np.vstack(result)
             pred_score = np.max(scores, axis=1)
             pred_label = np.argmax(scores, axis=1)
-            print(model.CLASSES, pred_label)
             pred_class = [model.CLASSES[lb] for lb in pred_label]
 
             img_metas = data['img_metas'].data[0]
