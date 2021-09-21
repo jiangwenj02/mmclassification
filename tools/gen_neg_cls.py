@@ -54,7 +54,7 @@ class Evaluator:
         self._init_detector()
         class_dirs = glob.glob(osp.join(self.images_root,'*'))
         for index,  class_dir in enumerate(class_dirs):
-
+            class_dir = osp.basename(class_dir)
             image_path = os.path.join(self.images_root, class_dir)
 
             image_files = glob.glob(osp.join(image_path, '*.jpg'))
