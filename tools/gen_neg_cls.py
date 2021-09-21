@@ -83,14 +83,14 @@ class Evaluator:
                 img = self.model.show_result(img_ori, result, show=False)
                 
                 if result['pred_class'] != p.stem:
-                    cv2.imwrite(os.path.join(self.save_train_images, p.stem, osp.basename(image_files[frame])), img_ori)
+                    cv2.imwrite(os.path.join(self.save_path, p.stem, osp.basename(image_files[frame])), img_ori)
 
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description="video_evaluation")
     parser.add_argument('--csv_file', type=str, default='neg0615.csv', help='source')  # file/folder, 0 for webcam
-    parser.add_argument('--video_path', type=str, default='/data2/qilei_chen/DATA/erosive_ulcer_videos', help='source')  # file/folder, 0 for webcam
-    parser.add_argument('--save_path', type=str, default='/data3/zzhang/tmp/erosive_ulcer_videos0615/', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--images_path', type=str, default='/data2/dataset/gastric_3cls_0625/test', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--save_path', type=str, default='/data3/zzhang/tmp/gastric_3cls_0921/', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--save_train_images', default=None, help='source')  # /data3/zzhang/tmp/classification/train/non_cancer/
     # parser.add_argument('--det_summary', type=str, default='/data3/zzhang/tmp/erosive_ulcer_videos0615/summary.txt', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--start', default=0, type=int,  help="video index to start")
