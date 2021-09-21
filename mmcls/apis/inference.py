@@ -44,6 +44,8 @@ def init_model(config, checkpoint=None, device='cuda:0', options=None):
             warnings.warn('Class names are not saved in the checkpoint\'s '
                           'meta data, use imagenet by default.')
             model.CLASSES = ImageNet.CLASSES
+    model.CLASSES = model.CLASSES.sort()
+    print(model.CLASSES)
     model.cfg = config  # save the config in the model for convenience
     model.to(device)
     model.eval()
