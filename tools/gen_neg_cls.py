@@ -83,7 +83,7 @@ class Evaluator:
                 img = self.model.show_result(img_ori, result, show=False)
                 
                 if result['pred_class'] != p.stem:
-                    cv2.imwrite(os.path.join(self.save_path, p.stem, osp.basename(image_files[frame])), img_ori)
+                    cv2.imwrite(os.path.join(self.saving_root, p.stem, osp.basename(image_files[frame])), img_ori)
 
 if __name__ == '__main__':
     import argparse
