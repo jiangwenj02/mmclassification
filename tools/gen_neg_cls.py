@@ -121,6 +121,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     evaluator = Evaluator(args)
 
-    evaluator.test_video()
+    evaluator.test_images()
 
 
