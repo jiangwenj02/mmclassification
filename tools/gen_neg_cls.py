@@ -81,7 +81,6 @@ class Evaluator:
                 # Inference
                 result = inference_model(self.model, img_ori)
                 img = self.model.show_result(img_ori, result, show=False)
-                print(result['pred_class'], p.stem)
                 if result['pred_class'] != p.stem:
                     cv2.imwrite(os.path.join(self.saving_root, p.stem, osp.basename(image_files[frame])), img_ori)
 
