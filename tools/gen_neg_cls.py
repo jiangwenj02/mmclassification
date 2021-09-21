@@ -56,9 +56,6 @@ class Evaluator:
         for index,  class_dir in enumerate(class_dirs):
 
             image_path = os.path.join(self.images_root, class_dir)
-            if not os.path.isfile(image_path):
-                print('{} not exist'.format(image_path))
-                continue
 
             image_files = glob.glob(osp.join(image_path, '*.jpg'))
             length = len(image_files)
@@ -66,6 +63,7 @@ class Evaluator:
             count = 0 
             start_time = time.time()
             p = Path(image_path)  # to Path
+            print(p.stem)
             save_path = osp.join(self.saving_root, p.stem)  # img.jpg
             print(save_path)
             vid_save_path = osp.join(save_path, p.stem)
@@ -76,8 +74,10 @@ class Evaluator:
             os.makedirs(save_path, exist_ok=True)
             for frame in pbar:
                 torch.cuda.empty_cache()
-                img_ori = image_files[frame]
-
+                if not os.path.isfile(image_files[frame]):
+                    print('{} not exist'.format(image_files[frame]))
+                    continue
+                img_ori = mmcv.imread(image_files[frame])
                 # Inference
                 result = inference_model(self.model, img_ori)
                 img = self.model.show_result(img_ori, result, show=False)
