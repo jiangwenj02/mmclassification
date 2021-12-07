@@ -11,10 +11,10 @@ from .voc import VOC
 from .diseased import Diseased
 from .cancer import Cancer
 from .diseased3 import Diseased3
-
+from .stomach import Stomach
 __all__ = [
     'BaseDataset', 'ImageNet', 'CIFAR10', 'CIFAR100', 'MNIST', 'FashionMNIST',
-    'VOC', 'MultiLabelDataset', 'build_dataloader', 'build_dataset', 'Compose',
+    'VOC', 'MultiLabelDataset', 'build_dataloader', 'build_dataset',
     'DistributedSampler', 'ConcatDataset', 'RepeatDataset', 'Diseased', 'Cancer',
-    'ClassBalancedDataset', 'DATASETS', 'PIPELINES', 'Diseased3'
+    'ClassBalancedDataset', 'DATASETS', 'PIPELINES', 'Diseased3', 'Stomach'
 ]
