@@ -12,7 +12,7 @@ model = dict(
 )
 
 # yapf:disable
-log_config = dict(interval=20)
+log_config = dict(interval=1)
 # yapf:enable
 
 optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
