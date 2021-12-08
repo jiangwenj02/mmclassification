@@ -12,4 +12,4 @@ model = dict(
 )
 
 optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
-load_from = 'https://download.openmmlab.com/mmclassification/v0/resnet/resnet50_batch256_imagenet_20200708-cfb998bf.pth' 
+load_from = 'https://download.openmmlab.com/mmclassification/v0/se-resnet/se-resnet50_batch256_imagenet_20200804-ae206104.pth' 
