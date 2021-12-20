@@ -1,9 +1,12 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import codecs
 import os
 import os.path as osp
 
 import numpy as np
 import torch
+import torch.distributed as dist
+from mmcv.runner import get_dist_info, master_only
 
 from .base_dataset import BaseDataset
 from .builder import DATASETS
@@ -15,8 +18,8 @@ class MNIST(BaseDataset):
     """`MNIST <http://yann.lecun.com/exdb/mnist/>`_ Dataset.
 
     This implementation is modified from
-    https://github.com/pytorch/vision/blob/master/torchvision/datasets/mnist.py  # noqa: E501
-    """
+    https://github.com/pytorch/vision/blob/master/torchvision/datasets/mnist.py
+    """  # noqa: E501
 
     resource_prefix = 'http://yann.lecun.com/exdb/mnist/'
     resources = {
@@ -50,6 +53,15 @@ class MNIST(BaseDataset):
                     test_image_file) or not osp.exists(test_label_file):
             self.download()
 
+        _, world_size = get_dist_info()
+        if world_size > 1:
+            dist.barrier()
+            assert osp.exists(train_image_file) and osp.exists(
+                train_label_file) and osp.exists(
+                    test_image_file) and osp.exists(test_label_file), \
+                'Shared storage seems unavailable. Please download dataset ' \
+                f'manually through {self.resource_prefix}.'
+
         train_set = (read_image_file(train_image_file),
                      read_label_file(train_label_file))
         test_set = (read_image_file(test_image_file),
@@ -67,6 +79,7 @@ class MNIST(BaseDataset):
             data_infos.append(info)
         return data_infos
 
+    @master_only
     def download(self):
         os.makedirs(self.data_prefix, exist_ok=True)
 
@@ -84,8 +97,7 @@ class MNIST(BaseDataset):
 @DATASETS.register_module()
 class FashionMNIST(MNIST):
     """`Fashion-MNIST <https://github.com/zalandoresearch/fashion-mnist>`_
-        Dataset.
-    """
+    Dataset."""
 
     resource_prefix = 'http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/'  # noqa: E501
     resources = {
@@ -110,8 +122,9 @@ def get_int(b):
 
 def open_maybe_compressed_file(path):
     """Return a file object that possibly decompresses 'path' on the fly.
-       Decompression occurs when argument `path` is a string
-       and ends with '.gz' or '.xz'.
+
+    Decompression occurs when argument `path` is a string and ends with '.gz'
+    or '.xz'.
     """
     if not isinstance(path, str):
         return path
@@ -125,9 +138,10 @@ def open_maybe_compressed_file(path):
 
 
 def read_sn3_pascalvincent_tensor(path, strict=True):
-    """Read a SN3 file in "Pascal Vincent" format
-       (Lush file 'libidx/idx-io.lsh').
-       Argument may be a filename, compressed filename, or file object.
+    """Read a SN3 file in "Pascal Vincent" format (Lush file 'libidx/idx-
+    io.lsh').
+
+    Argument may be a filename, compressed filename, or file object.
     """
     # typemap
     if not hasattr(read_sn3_pascalvincent_tensor, 'typemap'):

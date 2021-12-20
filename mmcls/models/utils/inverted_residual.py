@@ -1,25 +1,24 @@
-import torch.nn as nn
+# Copyright (c) OpenMMLab. All rights reserved.
 import torch.utils.checkpoint as cp
 from mmcv.cnn import ConvModule
+from mmcv.runner import BaseModule
 
 from .se_layer import SELayer
 
 
-class InvertedResidual(nn.Module):
-    """Inverted Residual Block
+# class InvertedResidual(nn.Module):
+class InvertedResidual(BaseModule):
+    """Inverted Residual Block.
 
     Args:
         in_channels (int): The input channels of this Module.
         out_channels (int): The output channels of this Module.
         mid_channels (int): The input channels of the depthwise convolution.
-        kernel_size (int): The kernal size of the depthwise convolution.
+        kernel_size (int): The kernel size of the depthwise convolution.
             Default: 3.
         stride (int): The stride of the depthwise convolution. Default: 1.
-        se_cfg (dict): Config dict for se layer. Defaul: None, which means no
+        se_cfg (dict): Config dict for se layer. Default: None, which means no
             se layer.
-        with_expand_conv (bool): Use expand conv or not. If set False,
-            mid_channels must be the same with in_channels.
-            Default: True.
         conv_cfg (dict): Config dict for convolution layer. Default: None,
             which means using conv2d.
         norm_cfg (dict): Config dict for normalization layer.
@@ -31,7 +30,6 @@ class InvertedResidual(nn.Module):
 
     Returns:
         Tensor: The output tensor.
-
     """
 
     def __init__(self,
@@ -41,22 +39,20 @@ class InvertedResidual(nn.Module):
                  kernel_size=3,
                  stride=1,
                  se_cfg=None,
-                 with_expand_conv=True,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN'),
                  act_cfg=dict(type='ReLU'),
-                 with_cp=False):
-        super(InvertedResidual, self).__init__()
+                 with_cp=False,
+                 init_cfg=None):
+        super(InvertedResidual, self).__init__(init_cfg)
         self.with_res_shortcut = (stride == 1 and in_channels == out_channels)
         assert stride in [1, 2]
         self.with_cp = with_cp
         self.with_se = se_cfg is not None
-        self.with_expand_conv = with_expand_conv
+        self.with_expand_conv = (mid_channels != in_channels)
 
         if self.with_se:
             assert isinstance(se_cfg, dict)
-        if not self.with_expand_conv:
-            assert mid_channels == in_channels
 
         if self.with_expand_conv:
             self.expand_conv = ConvModule(
@@ -88,7 +84,7 @@ class InvertedResidual(nn.Module):
             padding=0,
             conv_cfg=conv_cfg,
             norm_cfg=norm_cfg,
-            act_cfg=act_cfg)
+            act_cfg=None)
 
     def forward(self, x):
 

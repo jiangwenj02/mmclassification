@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import numpy as np
 import torch.nn as nn
 from mmcv.cnn import build_conv_layer, build_norm_layer
@@ -20,7 +21,7 @@ class RegNet(ResNet):
             - wm (float): quantization parameter to quantize the width
             - depth (int): depth of the backbone
             - group_w (int): width of group
-            - bot_mul (float): bottleneck ratio, i.e. expansion of bottlneck.
+            - bot_mul (float): bottleneck ratio, i.e. expansion of bottleneck.
         strides (Sequence[int]): Strides of the first block of each stage.
         base_channels (int): Base channels after stem layer.
         in_channels (int): Number of input image channels. Default: 3.
@@ -42,7 +43,7 @@ class RegNet(ResNet):
             in resblocks to let them behave as identity. Default: True.
 
     Example:
-        >>> from mmdet.models import RegNet
+        >>> from mmcls.models import RegNet
         >>> import torch
         >>> self = RegNet(
                 arch=dict(
@@ -97,8 +98,9 @@ class RegNet(ResNet):
                  norm_cfg=dict(type='BN', requires_grad=True),
                  norm_eval=False,
                  with_cp=False,
-                 zero_init_residual=True):
-        super(ResNet, self).__init__()
+                 zero_init_residual=True,
+                 init_cfg=None):
+        super(ResNet, self).__init__(init_cfg)
 
         # Generate RegNet parameters first
         if isinstance(arch, str):
@@ -218,8 +220,9 @@ class RegNet(ResNet):
             divisor (int): The divisor of channels. Defaults to 8.
 
         Returns:
-            list, int: return a list of widths of each stage and the number of
-                stages
+            tuple: tuple containing:
+                - list: Widths of each stage.
+                - int: The number of stages.
         """
         assert width_slope >= 0
         assert initial_width > 0
@@ -273,7 +276,7 @@ class RegNet(ResNet):
         return widths, groups
 
     def get_stages_from_blocks(self, widths):
-        """Gets widths/stage_blocks of network at each stage
+        """Gets widths/stage_blocks of network at each stage.
 
         Args:
             widths (list[int]): Width in each stage.
@@ -306,7 +309,4 @@ class RegNet(ResNet):
             if i in self.out_indices:
                 outs.append(x)
 
-        if len(outs) == 1:
-            return outs[0]
-        else:
-            return tuple(outs)
+        return tuple(outs)

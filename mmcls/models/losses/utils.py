@@ -1,5 +1,7 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import functools
 
+import torch
 import torch.nn.functional as F
 
 
@@ -30,7 +32,7 @@ def weight_reduce_loss(loss, weight=None, reduction='mean', avg_factor=None):
         loss (Tensor): Element-wise loss.
         weight (Tensor): Element-wise weights.
         reduction (str): Same as built-in losses of PyTorch.
-        avg_factor (float): Avarage factor when computing the mean of losses.
+        avg_factor (float): Average factor when computing the mean of losses.
 
     Returns:
         Tensor: Processed loss values.
@@ -56,11 +58,11 @@ def weighted_loss(loss_func):
     """Create a weighted version of a given loss function.
 
     To use this decorator, the loss function must have the signature like
-    `loss_func(pred, target, **kwargs)`. The function only needs to compute
+    ``loss_func(pred, target, **kwargs)``. The function only needs to compute
     element-wise loss without any reduction. This decorator will add weight
     and reduction arguments to the function. The decorated function will have
-    the signature like `loss_func(pred, target, weight=None, reduction='mean',
-    avg_factor=None, **kwargs)`.
+    the signature like ``loss_func(pred, target, weight=None, reduction='mean',
+    avg_factor=None, **kwargs)``.
 
     :Example:
 
@@ -96,3 +98,24 @@ def weighted_loss(loss_func):
         return loss
 
     return wrapper
+
+
+def convert_to_one_hot(targets: torch.Tensor, classes) -> torch.Tensor:
+    """This function converts target class indices to one-hot vectors, given
+    the number of classes.
+
+    Args:
+        targets (Tensor): The ground truth label of the prediction
+                with shape (N, 1)
+        classes (int): the number of classes.
+
+    Returns:
+        Tensor: Processed loss values.
+    """
+    assert (torch.max(targets).item() <
+            classes), 'Class Index must be less than number of classes'
+    one_hot_targets = torch.zeros((targets.shape[0], classes),
+                                  dtype=torch.long,
+                                  device=targets.device)
+    one_hot_targets.scatter_(1, targets.long(), 1)
+    return one_hot_targets

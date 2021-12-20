@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import warnings
 
 import numpy as np
@@ -6,8 +7,8 @@ import torch
 
 def average_performance(pred, target, thr=None, k=None):
     """Calculate CP, CR, CF1, OP, OR, OF1, where C stands for per-class
-        average, O stands for overall average, P stands for precision, R
-        stands for recall and F1 stands for F1-score
+    average, O stands for overall average, P stands for precision, R stands for
+    recall and F1 stands for F1-score.
 
     Args:
         pred (torch.Tensor | np.ndarray): The model prediction with shape

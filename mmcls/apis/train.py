@@ -1,15 +1,67 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import random
 import warnings
 
 import numpy as np
 import torch
+import torch.distributed as dist
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
-from mmcv.runner import DistSamplerSeedHook, build_optimizer, build_runner
+from mmcv.runner import (DistSamplerSeedHook, build_optimizer, build_runner,
+                         get_dist_info)
 
-from mmcls.core import (DistEvalHook, DistOptimizerHook, EvalHook,
-                        Fp16OptimizerHook)
+from mmcls.core import DistOptimizerHook
 from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.utils import get_root_logger
+
+# TODO import eval hooks from mmcv and delete them from mmcls
+try:
+    from mmcv.runner.hooks import EvalHook, DistEvalHook
+except ImportError:
+    warnings.warn('DeprecationWarning: EvalHook and DistEvalHook from mmcls '
+                  'will be deprecated.'
+                  'Please install mmcv through master branch.')
+    from mmcls.core import EvalHook, DistEvalHook
+
+# TODO import optimizer hook from mmcv and delete them from mmcls
+try:
+    from mmcv.runner import Fp16OptimizerHook
+except ImportError:
+    warnings.warn('DeprecationWarning: FP16OptimizerHook from mmcls will be '
+                  'deprecated. Please install mmcv>=1.1.4.')
+    from mmcls.core import Fp16OptimizerHook
+
+
+def init_random_seed(seed=None, device='cuda'):
+    """Initialize random seed.
+
+    If the seed is not set, the seed will be automatically randomized,
+    and then broadcast to all processes to prevent some potential bugs.
+
+    Args:
+        seed (int, Optional): The seed. Default to None.
+        device (str): The device where the seed will be put on.
+            Default to 'cuda'.
+
+    Returns:
+        int: Seed to be used.
+    """
+    if seed is not None:
+        return seed
+
+    # Make sure all ranks share the same random seed to prevent
+    # some potential bugs. Please refer to
+    # https://github.com/open-mmlab/mmdetection/issues/6339
+    rank, world_size = get_dist_info()
+    seed = np.random.randint(2**31)
+    if world_size == 1:
+        return seed
+
+    if rank == 0:
+        random_num = torch.tensor(seed, dtype=torch.int32, device=device)
+    else:
+        random_num = torch.tensor(0, dtype=torch.int32, device=device)
+    dist.broadcast(random_num, src=0)
+    return random_num.item()
 
 
 def set_random_seed(seed, deterministic=False):
@@ -37,8 +89,9 @@ def train_model(model,
                 distributed=False,
                 validate=False,
                 timestamp=None,
+                device='cuda',
                 meta=None):
-    logger = get_root_logger(cfg.log_level)
+    logger = get_root_logger()
 
     # prepare data loaders
     dataset = dataset if isinstance(dataset, (list, tuple)) else [dataset]
@@ -66,8 +119,13 @@ def train_model(model,
             broadcast_buffers=False,
             find_unused_parameters=find_unused_parameters)
     else:
-        model = MMDataParallel(
-            model.cuda(cfg.gpu_ids[0]), device_ids=cfg.gpu_ids)
+        if device == 'cuda':
+            model = MMDataParallel(
+                model.cuda(cfg.gpu_ids[0]), device_ids=cfg.gpu_ids)
+        elif device == 'cpu':
+            model = model.cpu()
+        else:
+            raise ValueError(F'unsupported device name {device}.')
 
     # build runner
     optimizer = build_optimizer(model, cfg.optimizer)
@@ -105,10 +163,14 @@ def train_model(model,
         optimizer_config = cfg.optimizer_config
 
     # register hooks
-    runner.register_training_hooks(cfg.lr_config, optimizer_config,
-                                   cfg.checkpoint_config, cfg.log_config,
-                                   cfg.get('momentum_config', None))
-    if distributed:
+    runner.register_training_hooks(
+        cfg.lr_config,
+        optimizer_config,
+        cfg.checkpoint_config,
+        cfg.log_config,
+        cfg.get('momentum_config', None),
+        custom_hooks_config=cfg.get('custom_hooks', None))
+    if distributed and cfg.runner['type'] == 'EpochBasedRunner':
         runner.register_hook(DistSamplerSeedHook())
 
     # register eval hooks
@@ -124,7 +186,11 @@ def train_model(model,
         eval_cfg = cfg.get('evaluation', {})
         eval_cfg['by_epoch'] = cfg.runner['type'] != 'IterBasedRunner'
         eval_hook = DistEvalHook if distributed else EvalHook
-        runner.register_hook(eval_hook(val_dataloader, **eval_cfg))
+        # `EvalHook` needs to be executed after `IterTimerHook`.
+        # Otherwise, it will cause a bug if use `IterBasedRunner`.
+        # Refers to https://github.com/open-mmlab/mmcv/issues/1261
+        runner.register_hook(
+            eval_hook(val_dataloader, **eval_cfg), priority='LOW')
 
     if cfg.resume_from:
         runner.resume(cfg.resume_from)

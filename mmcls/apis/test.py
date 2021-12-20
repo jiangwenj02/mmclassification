@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
 import pickle
 import shutil
@@ -116,6 +117,11 @@ def multi_gpu_test(model, data_loader, tmpdir=None, gpu_collect=False):
     dataset = data_loader.dataset
     rank, world_size = get_dist_info()
     if rank == 0:
+        # Check if tmpdir is valid for cpu_collect
+        if (not gpu_collect) and (tmpdir is not None and osp.exists(tmpdir)):
+            raise OSError((f'The tmpdir {tmpdir} already exists.',
+                           ' Since tmpdir will be deleted after testing,',
+                           ' please make sure you specify an empty one.'))
         prog_bar = mmcv.ProgressBar(len(dataset))
     time.sleep(2)  # This line can prevent deadlock problem in some cases.
     for i, data in enumerate(data_loader):
@@ -150,7 +156,8 @@ def collect_results_cpu(result_part, size, tmpdir=None):
                                 dtype=torch.uint8,
                                 device='cuda')
         if rank == 0:
-            tmpdir = tempfile.mkdtemp()
+            mmcv.mkdir_or_exist('.dist_test')
+            tmpdir = tempfile.mkdtemp(dir='.dist_test')
             tmpdir = torch.tensor(
                 bytearray(tmpdir.encode()), dtype=torch.uint8, device='cuda')
             dir_tensor[:len(tmpdir)] = tmpdir
@@ -170,10 +177,7 @@ def collect_results_cpu(result_part, size, tmpdir=None):
         for i in range(world_size):
             part_file = osp.join(tmpdir, f'part_{i}.pkl')
             part_result = mmcv.load(part_file)
-            # When data is severely insufficient, an empty part_result
-            # on a certain gpu could makes the overall outputs empty.
-            if part_result:
-                part_list.append(part_result)
+            part_list.append(part_result)
         # sort the results
         ordered_results = []
         for res in zip(*part_list):
@@ -208,10 +212,7 @@ def collect_results_gpu(result_part, size):
         part_list = []
         for recv, shape in zip(part_recv_list, shape_list):
             part_result = pickle.loads(recv[:shape[0]].cpu().numpy().tobytes())
-            # When data is severely insufficient, an empty part_result
-            # on a certain gpu could makes the overall outputs empty.
-            if part_result:
-                part_list.append(part_result)
+            part_list.append(part_result)
         # sort the results
         ordered_results = []
         for res in zip(*part_list):

@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import os.path as osp
 import xml.etree.ElementTree as ET
 
@@ -10,8 +11,7 @@ from .multi_label import MultiLabelDataset
 
 @DATASETS.register_module()
 class VOC(MultiLabelDataset):
-    """`Pascal VOC <http://host.robots.ox.ac.uk/pascal/VOC/>`_ Dataset.
-    """
+    """`Pascal VOC <http://host.robots.ox.ac.uk/pascal/VOC/>`_ Dataset."""
 
     CLASSES = ('aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car',
                'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse',
@@ -26,7 +26,7 @@ class VOC(MultiLabelDataset):
             raise ValueError('Cannot infer dataset year from img_prefix.')
 
     def load_annotations(self):
-        """Load annotations
+        """Load annotations.
 
         Returns:
             list[dict]: Annotation info from XML file.

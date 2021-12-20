@@ -1,5 +1,6 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 import torch.nn as nn
-from mmcv.cnn import ConvModule, constant_init, kaiming_init, normal_init
+from mmcv.cnn import ConvModule
 from mmcv.utils.parrots_wrapper import _BatchNorm
 
 from ..builder import BACKBONES
@@ -45,13 +46,11 @@ class VGG(BaseBackbone):
         num_stages (int): VGG stages, normally 5.
         dilations (Sequence[int]): Dilation of each stage.
         out_indices (Sequence[int], optional): Output from which stages.
-            If only one stage is specified, a single tensor (feature map) is
-            returned, otherwise multiple stages are specified, a tuple of
-            tensors will be returned. When it is None, the default behavior
-            depends on whether num_classes is specified. If num_classes <= 0,
-            the default value is (4, ), outputing the last feature map before
-            classifier. If num_classes > 0, the default value is (5, ),
-            outputing the classification score. Default: None.
+            When it is None, the default behavior depends on whether
+            num_classes is specified. If num_classes <= 0, the default value is
+            (4, ), output the last feature map before classifier. If
+            num_classes > 0, the default value is (5, ), output the
+            classification score. Default: None.
         frozen_stages (int): Stages to be frozen (all param fixed). -1 means
             not freezing any parameters.
         norm_eval (bool): Whether to set norm layers to eval mode, namely,
@@ -85,8 +84,13 @@ class VGG(BaseBackbone):
                  act_cfg=dict(type='ReLU'),
                  norm_eval=False,
                  ceil_mode=False,
-                 with_last_pool=True):
-        super(VGG, self).__init__()
+                 with_last_pool=True,
+                 init_cfg=[
+                     dict(type='Kaiming', layer=['Conv2d']),
+                     dict(type='Constant', val=1., layer=['_BatchNorm']),
+                     dict(type='Normal', std=0.01, layer=['Linear'])
+                 ]):
+        super(VGG, self).__init__(init_cfg)
         if depth not in self.arch_settings:
             raise KeyError(f'invalid depth {depth} for vgg')
         assert num_stages >= 1 and num_stages <= 5
@@ -144,17 +148,6 @@ class VGG(BaseBackbone):
                 nn.Linear(4096, num_classes),
             )
 
-    def init_weights(self, pretrained=None):
-        super(VGG, self).init_weights(pretrained)
-        if pretrained is None:
-            for m in self.modules():
-                if isinstance(m, nn.Conv2d):
-                    kaiming_init(m)
-                elif isinstance(m, _BatchNorm):
-                    constant_init(m, 1)
-                elif isinstance(m, nn.Linear):
-                    normal_init(m, std=0.01)
-
     def forward(self, x):
         outs = []
         vgg_layers = getattr(self, self.module_name)
@@ -168,10 +161,8 @@ class VGG(BaseBackbone):
             x = x.view(x.size(0), -1)
             x = self.classifier(x)
             outs.append(x)
-        if len(outs) == 1:
-            return outs[0]
-        else:
-            return tuple(outs)
+
+        return tuple(outs)
 
     def _freeze_stages(self):
         vgg_layers = getattr(self, self.module_name)

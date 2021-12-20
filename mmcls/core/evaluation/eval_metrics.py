@@ -1,5 +1,9 @@
+# Copyright (c) OpenMMLab. All rights reserved.
+from numbers import Number
+
 import numpy as np
 import torch
+from torch.nn.functional import one_hot
 
 
 def calculate_confusion_matrix(pred, target):
@@ -11,8 +15,8 @@ def calculate_confusion_matrix(pred, target):
             shape (N, 1) or (N,).
 
     Returns:
-        torch.Tensor: Confusion matrix with shape (C, C), where C is the number
-             of classes.
+        torch.Tensor: Confusion matrix
+            The shape is (C, C), where C is the number of classes.
     """
 
     if isinstance(pred, np.ndarray):
@@ -24,21 +28,22 @@ def calculate_confusion_matrix(pred, target):
         (f'pred and target should be torch.Tensor or np.ndarray, '
          f'but got {type(pred)} and {type(target)}.')
 
+    # Modified from PyTorch-Ignite
     num_classes = pred.size(1)
-    _, pred_label = pred.topk(1, dim=1)
-    pred_label = pred_label.view(-1)
-    target_label = target.view(-1)
+    pred_label = torch.argmax(pred, dim=1).flatten()
+    target_label = target.flatten()
     assert len(pred_label) == len(target_label)
-    confusion_matrix = torch.zeros(num_classes, num_classes)
+
     with torch.no_grad():
-        for t, p in zip(target_label, pred_label):
-            confusion_matrix[t.long(), p.long()] += 1
-    return confusion_matrix
+        indices = num_classes * target_label + pred_label
+        matrix = torch.bincount(indices, minlength=num_classes**2)
+        matrix = matrix.reshape(num_classes, num_classes)
+    return matrix
 
 
-def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
+def precision_recall_f1(pred, target, average_mode='macro', thrs=0.):
     """Calculate precision, recall and f1 score according to the prediction and
-         target.
+    target.
 
     Args:
         pred (torch.Tensor | np.array): The model prediction with shape (N, C).
@@ -49,45 +54,52 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
             class are returned. If 'macro', calculate metrics for each class,
             and find their unweighted mean.
             Defaults to 'macro'.
-        thrs (float | tuple[float], optional): Predictions with scores under
-            the thresholds are considered negative. Default to None.
+        thrs (Number | tuple[Number], optional): Predictions with scores under
+            the thresholds are considered negative. Default to 0.
 
     Returns:
-        float | np.array | list[float | np.array]: Precision, recall, f1 score.
-            If the ``average_mode`` is set to macro, np.array is used in favor
-            of float to give class-wise results. If the ``average_mode`` is set
-             to none, float is used to return a single value.
-            If ``thrs`` is a single float or None, the function will return
-            float or np.array. If ``thrs`` is a tuple, the function will return
-             a list containing metrics for each ``thrs`` condition.
+        tuple: tuple containing precision, recall, f1 score.
+
+            The type of precision, recall, f1 score is one of the following:
+
+        +----------------------------+--------------------+-------------------+
+        | Args                       | ``thrs`` is number | ``thrs`` is tuple |
+        +============================+====================+===================+
+        | ``average_mode`` = "macro" | float              | list[float]       |
+        +----------------------------+--------------------+-------------------+
+        | ``average_mode`` = "none"  | np.array           | list[np.array]    |
+        +----------------------------+--------------------+-------------------+
     """
 
     allowed_average_mode = ['macro', 'none']
     if average_mode not in allowed_average_mode:
         raise ValueError(f'Unsupport type of averaging {average_mode}.')
 
-    if isinstance(pred, torch.Tensor):
-        pred = pred.numpy()
-    if isinstance(target, torch.Tensor):
-        target = target.numpy()
-    assert (isinstance(pred, np.ndarray) and isinstance(target, np.ndarray)),\
-        (f'pred and target should be torch.Tensor or np.ndarray, '
-         f'but got {type(pred)} and {type(target)}.')
+    if isinstance(pred, np.ndarray):
+        pred = torch.from_numpy(pred)
+    assert isinstance(pred, torch.Tensor), \
+        (f'pred should be torch.Tensor or np.ndarray, but got {type(pred)}.')
+    if isinstance(target, np.ndarray):
+        target = torch.from_numpy(target)
+    assert isinstance(target, torch.Tensor), \
+        f'target should be torch.Tensor or np.ndarray, ' \
+        f'but got {type(target)}.'
 
-    if thrs is None:
-        thrs = 0.0
-    if isinstance(thrs, float):
+    if isinstance(thrs, Number):
         thrs = (thrs, )
         return_single = True
     elif isinstance(thrs, tuple):
         return_single = False
     else:
         raise TypeError(
-            f'thrs should be float or tuple, but got {type(thrs)}.')
+            f'thrs should be a number or tuple, but got {type(thrs)}.')
 
-    label = np.indices(pred.shape)[1]
-    pred_label = np.argsort(pred, axis=1)[:, -1]
-    pred_score = np.sort(pred, axis=1)[:, -1]
+    num_classes = pred.size(1)
+    pred_score, pred_label = torch.topk(pred, k=1)
+    pred_score = pred_score.flatten()
+    pred_label = pred_label.flatten()
+
+    gt_positive = one_hot(target.flatten(), num_classes)
 
     precisions = []
     recalls = []
@@ -97,16 +109,22 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
     FPRs = []
     for thr in thrs:
         # Only prediction values larger than thr are counted as positive
-        _pred_label = pred_label.copy()
+        pred_positive = one_hot(pred_label, num_classes)
         if thr is not None:
-            _pred_label[pred_score <= thr] = -1
-        pred_positive = label == _pred_label.reshape(-1, 1)
-        gt_positive = label == target.reshape(-1, 1)
-        gt_negtive = label != target.reshape(-1, 1)
-        precision = (pred_positive & gt_positive).sum(0) / np.maximum(
-            pred_positive.sum(0), 1) * 100
-        recall = (pred_positive & gt_positive).sum(0) / np.maximum(
-            gt_positive.sum(0), 1) * 100
+           pred_positive[pred_score <= thr] = 0
+        class_correct = (pred_positive & gt_positive).sum(0)
+        precision = class_correct / np.maximum(pred_positive.sum(0), 1.) * 100
+        recall = class_correct / np.maximum(gt_positive.sum(0), 1.) * 100
+        f1_score = 2 * precision * recall / np.maximum(
+            precision + recall,
+            torch.finfo(torch.float32).eps)
+        # pred_positive = label == pred_label.reshape(-1, 1)
+        # gt_positive = label == target.reshape(-1, 1)
+        # gt_negtive = label != target.reshape(-1, 1)
+        # precision = (pred_positive & gt_positive).sum(0) / np.maximum(
+        #     pred_positive.sum(0), 1) * 100
+        # recall = (pred_positive & gt_positive).sum(0) / np.maximum(
+        #     gt_positive.sum(0), 1) * 100
         f1_score = 2 * precision * recall / np.maximum(precision + recall,
                                                        1e-20)
         f2_score = 5 * precision * recall / np.maximum(4 * precision + recall,
@@ -127,6 +145,12 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
             f2_score = float(f2_score.mean())
             TPR = float(TPR.mean())
             FPR = float(FPR.mean())
+        elif average_mode == 'none':
+            precision = precision.detach().cpu().numpy()
+            recall = recall.detach().cpu().numpy()
+            f1_score = f1_score.detach().cpu().numpy()
+        else:
+            raise ValueError(f'Unsupport type of averaging {average_mode}.')
         precisions.append(precision)
         recalls.append(recall)
         f1_scores.append(f1_score)
@@ -140,7 +164,7 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=None):
         return precisions, recalls, f1_scores, f2_scores, TPRs, FPRs
 
 
-def precision(pred, target, average_mode='macro', thrs=None):
+def precision(pred, target, average_mode='macro', thrs=0.):
     """Calculate precision according to the prediction and target.
 
     Args:
@@ -152,23 +176,25 @@ def precision(pred, target, average_mode='macro', thrs=None):
             class are returned. If 'macro', calculate metrics for each class,
             and find their unweighted mean.
             Defaults to 'macro'.
-        thrs (float | tuple[float], optional): Predictions with scores under
-            the thresholds are considered negative. Default to None.
+        thrs (Number | tuple[Number], optional): Predictions with scores under
+            the thresholds are considered negative. Default to 0.
 
     Returns:
          float | np.array | list[float | np.array]: Precision.
-            If the ``average_mode`` is set to macro, np.array is used in favor
-            of float to give class-wise results. If the ``average_mode`` is set
-             to none, float is used to return a single value.
-            If ``thrs`` is a single float or None, the function will return
-            float or np.array. If ``thrs`` is a tuple, the function will return
-             a list containing metrics for each ``thrs`` condition.
+
+        +----------------------------+--------------------+-------------------+
+        | Args                       | ``thrs`` is number | ``thrs`` is tuple |
+        +============================+====================+===================+
+        | ``average_mode`` = "macro" | float              | list[float]       |
+        +----------------------------+--------------------+-------------------+
+        | ``average_mode`` = "none"  | np.array           | list[np.array]    |
+        +----------------------------+--------------------+-------------------+
     """
     precisions, _, _,_ = precision_recall_f1(pred, target, average_mode, thrs)
     return precisions
 
 
-def recall(pred, target, average_mode='macro', thrs=None):
+def recall(pred, target, average_mode='macro', thrs=0.):
     """Calculate recall according to the prediction and target.
 
     Args:
@@ -180,23 +206,25 @@ def recall(pred, target, average_mode='macro', thrs=None):
             class are returned. If 'macro', calculate metrics for each class,
             and find their unweighted mean.
             Defaults to 'macro'.
-        thrs (float | tuple[float], optional): Predictions with scores under
-            the thresholds are considered negative. Default to None.
+        thrs (Number | tuple[Number], optional): Predictions with scores under
+            the thresholds are considered negative. Default to 0.
 
     Returns:
          float | np.array | list[float | np.array]: Recall.
-            If the ``average_mode`` is set to macro, np.array is used in favor
-            of float to give class-wise results. If the ``average_mode`` is set
-             to none, float is used to return a single value.
-            If ``thrs`` is a single float or None, the function will return
-            float or np.array. If ``thrs`` is a tuple, the function will return
-             a list containing metrics for each ``thrs`` condition.
+
+        +----------------------------+--------------------+-------------------+
+        | Args                       | ``thrs`` is number | ``thrs`` is tuple |
+        +============================+====================+===================+
+        | ``average_mode`` = "macro" | float              | list[float]       |
+        +----------------------------+--------------------+-------------------+
+        | ``average_mode`` = "none"  | np.array           | list[np.array]    |
+        +----------------------------+--------------------+-------------------+
     """
     _, recalls, _,_ = precision_recall_f1(pred, target, average_mode, thrs)
     return recalls
 
 
-def f1_score(pred, target, average_mode='macro', thrs=None):
+def f1_score(pred, target, average_mode='macro', thrs=0.):
     """Calculate F1 score according to the prediction and target.
 
     Args:
@@ -208,25 +236,27 @@ def f1_score(pred, target, average_mode='macro', thrs=None):
             class are returned. If 'macro', calculate metrics for each class,
             and find their unweighted mean.
             Defaults to 'macro'.
-        thrs (float | tuple[float], optional): Predictions with scores under
-            the thresholds are considered negative. Default to None.
+        thrs (Number | tuple[Number], optional): Predictions with scores under
+            the thresholds are considered negative. Default to 0.
 
     Returns:
          float | np.array | list[float | np.array]: F1 score.
-            If the ``average_mode`` is set to macro, np.array is used in favor
-            of float to give class-wise results. If the ``average_mode`` is set
-             to none, float is used to return a single value.
-            If ``thrs`` is a single float or None, the function will return
-            float or np.array. If ``thrs`` is a tuple, the function will return
-             a list containing metrics for each ``thrs`` condition.
+
+        +----------------------------+--------------------+-------------------+
+        | Args                       | ``thrs`` is number | ``thrs`` is tuple |
+        +============================+====================+===================+
+        | ``average_mode`` = "macro" | float              | list[float]       |
+        +----------------------------+--------------------+-------------------+
+        | ``average_mode`` = "none"  | np.array           | list[np.array]    |
+        +----------------------------+--------------------+-------------------+
     """
     _, _, f1_scores,_ = precision_recall_f1(pred, target, average_mode, thrs)
     return f1_scores
 
 
 def support(pred, target, average_mode='macro'):
-    """Calculate the total number of occurrences of each label according to
-        the prediction and target.
+    """Calculate the total number of occurrences of each label according to the
+    prediction and target.
 
     Args:
         pred (torch.Tensor | np.array): The model prediction with shape (N, C).
@@ -239,10 +269,12 @@ def support(pred, target, average_mode='macro'):
             Defaults to 'macro'.
 
     Returns:
-        float | np.array: Precision, recall, f1 score.
-            The function returns a single float if the average_mode is set to
-            macro, or a np.array with shape C if the average_mode is set to
-             none.
+        float | np.array: Support.
+
+            - If the ``average_mode`` is set to macro, the function returns
+              a single float.
+            - If the ``average_mode`` is set to none, the function returns
+              a np.array with shape C.
     """
     confusion_matrix = calculate_confusion_matrix(pred, target)
     with torch.no_grad():

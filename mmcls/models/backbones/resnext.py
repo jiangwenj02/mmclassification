@@ -1,3 +1,4 @@
+# Copyright (c) OpenMMLab. All rights reserved.
 from mmcv.cnn import build_conv_layer, build_norm_layer
 
 from ..builder import BACKBONES
@@ -89,7 +90,7 @@ class Bottleneck(_Bottleneck):
 class ResNeXt(ResNet):
     """ResNeXt backbone.
 
-    Please refer to the `paper <https://arxiv.org/abs/1611.05431>`_ for
+    Please refer to the `paper <https://arxiv.org/abs/1611.05431>`__ for
     details.
 
     Args:
