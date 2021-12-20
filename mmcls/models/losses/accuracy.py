@@ -56,8 +56,6 @@ def accuracy_torch(pred, target, topk=(1, ), thrs=0.):
     res = []
     maxk = max(topk)
     num = pred.size(0)
-    import pdb
-    pdb.set_trace()
     pred_score, pred_label = pred.topk(maxk, dim=1)
     pred_label = pred_label.t()
     correct = pred_label.eq(target.view(1, -1).expand_as(pred_label))

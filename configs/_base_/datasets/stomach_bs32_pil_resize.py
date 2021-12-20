@@ -37,4 +37,5 @@ data = dict(
         type=dataset_type,
         data_prefix='/data2/zinan_xiong/gastritis_data/test',
         pipeline=test_pipeline))
-evaluation = dict(interval=1, metric='accuracy')
+evaluation = dict(interval=1, metric='accuracy',
+                    metric_options = {'topk': (1, )})
