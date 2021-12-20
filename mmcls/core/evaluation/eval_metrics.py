@@ -100,7 +100,7 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=0.):
     pred_label = pred_label.flatten()
 
     gt_positive = one_hot(target.flatten(), num_classes)
-
+    gt_negtive = 1 - gt_positive
     precisions = []
     recalls = []
     f1_scores = []
@@ -125,15 +125,15 @@ def precision_recall_f1(pred, target, average_mode='macro', thrs=0.):
         #     pred_positive.sum(0), 1) * 100
         # recall = (pred_positive & gt_positive).sum(0) / np.maximum(
         #     gt_positive.sum(0), 1) * 100
-        f1_score = 2 * precision * recall / np.maximum(precision + recall,
-                                                       1e-20)
+        # f1_score = 2 * precision * recall / np.maximum(precision + recall,
+        #                                                1e-20)
         f2_score = 5 * precision * recall / np.maximum(4 * precision + recall,
-                                                       1e-20)
+                                                       torch.finfo(torch.float32).eps)
 
-        TPR = (pred_positive & gt_positive).sum(0) / np.maximum(
+        TPR = class_correct / np.maximum(
             gt_positive.sum(0), 1)
 
-        FPR = (pred_positive.sum(0) -  (pred_positive & gt_positive).sum(0)) / np.maximum(
+        FPR = (pred_positive.sum(0) -  class_correct) / np.maximum(
             gt_negtive.sum(0), 1)
         # print(gt_positive.sum(0), gt_negtive.sum(0))
         # print(thr, pred_positive.sum(0) -  (pred_positive & gt_positive).sum(0),np.maximum(
