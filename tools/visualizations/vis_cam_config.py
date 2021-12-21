@@ -253,7 +253,8 @@ def main():
     # apply transform and perpare data
     # data, src_img = apply_transforms(args.img, cfg.data.test.pipeline)
     # data['img'] = data['img'].unsqueeze(0)
-
+    import pdb
+    pdb.set_trace()
     # build target layers
     target_layers = [
         get_layer(layer_str, model) for layer_str in args.target_layers
@@ -263,8 +264,6 @@ def main():
     # init a cam grad calculator
     use_cuda = True if 'cuda' in args.device else False
     reshape_transform = build_reshape_transform(model)
-    import pdb
-    pdb.set_trace()
     cam = init_cam(args.method, model, target_layers, use_cuda,
                    reshape_transform)
 
