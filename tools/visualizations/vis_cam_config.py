@@ -271,14 +271,15 @@ def main():
     for i, data in enumerate(data_loader):
         img_metas = data['img_metas'].data[0]
         src_img = tensor2imgs(data['img'], **img_metas[0]['img_norm_cfg'])[0]
+        import pdb
+        pdb.set_trace()
         grayscale_cam = cam(
             input_tensor=data['img'],
             target_category=args.target_category,
             eigen_smooth=args.eigen_smooth,
             aug_smooth=args.aug_smooth)
         out_file = osp.join(args.save_path, img_metas[0]['ori_filename'])
-        # import pdb
-        # pdb.set_trace()
+        
         show_cam_grad(
             grayscale_cam, src_img, title=args.method, out_path=out_file)
         batch_size = data['img'].size(0)
