@@ -267,6 +267,7 @@ def main():
                    reshape_transform)
 
     # calculate cam grads and show|save the visualization image
+    prog_bar = mmcv.ProgressBar(len(dataset))
     for i, data in enumerate(data_loader):
         img_metas = data['img_metas'].data[0]
         src_img = tensor2imgs(data['img'], **img_metas[0]['img_norm_cfg'])
@@ -276,8 +277,13 @@ def main():
             eigen_smooth=args.eigen_smooth,
             aug_smooth=args.aug_smooth)
         out_file = osp.join(args.save_path, img_metas[0]['ori_filename'])
+        import pdb
+        pdb.set_trace()
         show_cam_grad(
             grayscale_cam, src_img, title=args.method, out_path=out_file)
+        batch_size = data['img'].size(0)
+        for _ in range(batch_size):
+            prog_bar.update()
 
 
 if __name__ == '__main__':
