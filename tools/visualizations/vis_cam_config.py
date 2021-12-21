@@ -46,7 +46,6 @@ Swin_based_Transformers = tuple([SwinTransformer])
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Visualize CAM')
-    parser.add_argument('img', help='Image file')
     parser.add_argument('config', help='Config file')
     parser.add_argument('checkpoint', help='Checkpoint file')
     parser.add_argument(
