@@ -263,6 +263,8 @@ def main():
     # init a cam grad calculator
     use_cuda = True if 'cuda' in args.device else False
     reshape_transform = build_reshape_transform(model)
+    import pdb
+    pdb.set_trace()
     cam = init_cam(args.method, model, target_layers, use_cuda,
                    reshape_transform)
 
@@ -271,8 +273,7 @@ def main():
     for i, data in enumerate(data_loader):
         img_metas = data['img_metas'].data[0]
         src_img = tensor2imgs(data['img'], **img_metas[0]['img_norm_cfg'])[0]
-        import pdb
-        pdb.set_trace()
+        
         grayscale_cam = cam(
             input_tensor=data['img'],
             target_category=args.target_category,
