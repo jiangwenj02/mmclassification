@@ -13,8 +13,11 @@ model = dict(
 
 data = dict(
     train=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/train'),
-    val=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/test'),
-    test=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/test'))
+    # val=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/test'),
+    # test=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/test')
+    val=dict(data_prefix='/data3/zzhang/tmp/gastritis_test'),
+    test=dict(data_prefix='/data3/zzhang/tmp/gastritis_test')
+    )
 
 # yapf:enable
 optimizer_config = dict(

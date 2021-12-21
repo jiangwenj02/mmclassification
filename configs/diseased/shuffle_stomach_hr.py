@@ -9,8 +9,11 @@ model = dict(
 )
 data = dict(
     train=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/train'),
-    val=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/test'),
-    test=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/test'))
+    # val=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/test'),
+    # test=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/test')
+    val=dict(data_prefix='/data3/zzhang/tmp/gastritis_test'),
+    test=dict(data_prefix='/data3/zzhang/tmp/gastritis_test')
+    )
 
 optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
 load_from = 'https://download.openmmlab.com/mmclassification/v0/shufflenet_v2/shufflenet_v2_batch1024_imagenet_20200812-5bf4721e.pth' 
