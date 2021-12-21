@@ -254,8 +254,6 @@ def main():
     # apply transform and perpare data
     # data, src_img = apply_transforms(args.img, cfg.data.test.pipeline)
     # data['img'] = data['img'].unsqueeze(0)
-    import pdb
-    pdb.set_trace()
     # build target layers
     target_layers = [
         get_layer(layer_str, model) for layer_str in args.target_layers
