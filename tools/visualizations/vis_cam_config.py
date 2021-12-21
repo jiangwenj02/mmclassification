@@ -204,7 +204,7 @@ def get_layer(layer_str, model):
                 ), "target-layer can't be 'bn' or 'relu'"
     for item_str in layer_items[1:]:
         if hasattr(cur_layer, item_str):
-            print(cur_layer)
+            print(cur_layer.__dict__)
             cur_layer = getattr(cur_layer, item_str)
         else:
             raise ValueError(
