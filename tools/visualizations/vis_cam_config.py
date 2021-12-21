@@ -238,11 +238,7 @@ def main():
         sys.exit()
 
     # init distributed env first, since logger depends on the dist info.
-    if args.launcher == 'none':
-        distributed = False
-    else:
-        distributed = True
-        init_dist(args.launcher, **cfg.dist_params)
+    distributed = False
     # build the dataloader
     dataset = build_dataset(cfg.data.test)
     # the extra round_up data will be removed during gpu/cpu collect
