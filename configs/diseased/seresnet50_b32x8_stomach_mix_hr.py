@@ -12,11 +12,11 @@ model = dict(
 )
 
 data = dict(
-    train=dict(data_prefix='/data2/zinan_xiong/gastritis_0101_mixed_resolution/train'),
+    train=dict(data_prefix='/data2/zinan_xiong/gastritis_0109_mixed_resolution_with_nianye/train'),
     # val=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/test'),
     # test=dict(data_prefix='/data2/zinan_xiong/gastritis_1218_high_resolution/test')
-    val=dict(data_prefix='/data2/zinan_xiong/gastritis_0101_mixed_resolution/test'),
-    test=dict(data_prefix='/data2/zinan_xiong/gastritis_0101_mixed_resolution/test')
+    val=dict(data_prefix='/data2/zinan_xiong/gastritis_0109_mixed_resolution_with_nianye/test'),
+    test=dict(data_prefix='/data2/zinan_xiong/gastritis_0109_mixed_resolution_with_nianye/test')
     )
 
 # yapf:enable
