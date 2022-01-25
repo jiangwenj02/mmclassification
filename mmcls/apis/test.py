@@ -34,8 +34,8 @@ def single_gpu_test(model,
         if show or out_dir:
             scores = np.vstack(result)
             pred_score = np.max(scores, axis=1)
-            pred_label = np.argmax(scores, axis=1)
-            pred_class = [model.CLASSES[lb] for lb in pred_label]
+            pred_label = np.argmax(scores, axis=1)[0]
+            pred_class = model.CLASSES[pred_label]
 
             img_metas = data['img_metas'].data[0]
             imgs = tensor2imgs(data['img'], **img_metas[0]['img_norm_cfg'])
@@ -46,7 +46,7 @@ def single_gpu_test(model,
                 img_show = img[:h, :w, :]
                 ori_h, ori_w = img_meta['ori_shape'][:-1]
                 img_show = mmcv.imresize(img_show, (ori_w, ori_h))
-                pred_class = model.CLASSES[pred_label]
+                
                 img_dir = osp.dirname(img_meta['ori_filename'])
                 img_name = osp.basename(img_meta['ori_filename'])
                 if out_dir:
