@@ -49,8 +49,8 @@ def single_gpu_test(model,
                 
                 img_dir = osp.dirname(img_meta['ori_filename'])
                 img_name = osp.basename(img_meta['ori_filename'])
-                if out_dir:
-                    pred_class = model.CLASSES[pred_label[i]]
+                pred_class = model.CLASSES[pred_label[i]]
+                if out_dir:                    
                     out_file = osp.join(out_dir, img_dir, pred_class, img_name)
                 else:
                     out_file = None
@@ -58,7 +58,7 @@ def single_gpu_test(model,
                 result_show = {
                     'pred_score': pred_score[i],
                     'pred_label': pred_label[i],
-                    'pred_class': pred_class[i]
+                    'pred_class': pred_class
                 }
                 model.module.show_result(
                     img_show,
