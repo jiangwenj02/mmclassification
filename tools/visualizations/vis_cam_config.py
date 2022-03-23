@@ -265,7 +265,7 @@ def main():
     reshape_transform = build_reshape_transform(model)
     cam = init_cam(args.method, model, target_layers, use_cuda,
                    reshape_transform)
-
+    print(args)
     # calculate cam grads and show|save the visualization image
     prog_bar = mmcv.ProgressBar(len(dataset))
     for i, data in enumerate(data_loader):
@@ -277,7 +277,9 @@ def main():
             target_category=args.target_category,
             eigen_smooth=args.eigen_smooth,
             aug_smooth=args.aug_smooth)
-        out_file = osp.join(args.save_path, img_metas[0]['ori_filename'])
+        filename = img_metas[0]['ori_filename'].replace(cfg.data.test.data_prefix, '')
+        out_file = osp.join(args.save_path, filename)
+        print(args.save_path, filename)
         import pdb
         pdb.set_trace()
         show_cam_grad(
