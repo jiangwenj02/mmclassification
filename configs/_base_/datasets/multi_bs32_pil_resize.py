@@ -1,11 +1,20 @@
+_base_ = [
+    'pipelines/auto_aug.py',
+]
+
 # dataset settings
 dataset_type = 'MultiDiseased'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='RandomResizedCrop', size=224, backend='pillow'),
+    dict(
+        type='RandomResizedCrop',
+        size=224,
+        backend='pillow',
+        interpolation='bicubic'),
     dict(type='RandomFlip', flip_prob=0.5, direction='horizontal'),
+    dict(type='AutoAugment', policies={{_base_.policy_imagenet}}),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='ImageToTensor', keys=['img']),
     dict(type='ToTensor', keys=['gt_label']),
@@ -13,9 +22,11 @@ train_pipeline = [
 ]
 test_pipeline = [
     dict(type='LoadImageFromFile'),
-    # dict(type='Resize', size=(256, -1), backend='pillow'),
-    # dict(type='CenterCrop', crop_size=224),
-    dict(type='Resize', size=(224, 224), backend='pillow'),
+    dict(
+        type='Resize',
+        size=(256, -1),
+        backend='pillow',
+        interpolation='bicubic'),
     dict(type='CenterCrop', crop_size=224),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='ImageToTensor', keys=['img']),
@@ -23,7 +34,7 @@ test_pipeline = [
 ]
 data = dict(
     samples_per_gpu=32,
-    workers_per_gpu=2,
+    workers_per_gpu=8,
     train=dict(
         type=dataset_type,
         data_prefix='/data3/dataset/XY_Capsule/Whole_Image_Classification/train',
