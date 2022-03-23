@@ -52,10 +52,10 @@ def get_samples(root, folder_to_idx, extensions):
     root = os.path.expanduser(root)
     for folder_name in sorted(list(folder_to_idx.keys())):
         _dir = os.path.join(root, folder_name)
-        for _, _, fns in sorted(os.walk(_dir)):
+        for dir_name, _, fns in sorted(os.walk(_dir)):
             for fn in sorted(fns):
                 if has_file_allowed_extension(fn, extensions):
-                    path = os.path.join(folder_name, fn)
+                    path = os.path.join(dir_name, fn)
                     item = (path, folder_to_idx[folder_name])
                     samples.append(item)
     return samples
