@@ -278,7 +278,8 @@ def main():
             eigen_smooth=args.eigen_smooth,
             aug_smooth=args.aug_smooth)
         out_file = osp.join(args.save_path, img_metas[0]['ori_filename'])
-        
+        import pdb
+        pdb.set_trace()
         show_cam_grad(
             grayscale_cam, src_img, title=args.method, out_path=out_file)
         batch_size = data['img'].size(0)
