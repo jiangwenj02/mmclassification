@@ -47,7 +47,9 @@ def single_gpu_test(model,
                 ori_h, ori_w = img_meta['ori_shape'][:-1]
                 img_show = mmcv.imresize(img_show, (ori_w, ori_h))
                 
-                img_dir = osp.dirname(img_meta['ori_filename'])
+                img_dir = osp.dirname(img_meta['ori_filename']).replace(dataset.data_prefix, '')
+                if img_dir[0] == '/':
+                    img_dir = img_dir[1:]
                 img_name = osp.basename(img_meta['ori_filename'])
                 pred_class = model.CLASSES[pred_label[i]]
                 if out_dir:                    
