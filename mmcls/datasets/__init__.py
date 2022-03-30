@@ -15,9 +15,10 @@ from .cancer import Cancer
 from .diseased3 import Diseased3
 from .stomach import Stomach
 from .multi_diseased import MultiDiseased
+from .binary_diseased import BinaryDiseased
 __all__ = [
     'BaseDataset', 'ImageNet', 'CIFAR10', 'CIFAR100', 'MNIST', 'FashionMNIST',
-    'VOC', 'MultiLabelDataset', 'build_dataloader', 'build_dataset',
+    'VOC', 'MultiLabelDataset', 'build_dataloader', 'build_dataset', 'BinaryDiseased',
     'DistributedSampler', 'ConcatDataset', 'RepeatDataset', 'Diseased', 'Cancer', 'MultiDiseased',
     'ClassBalancedDataset', 'DATASETS', 'PIPELINES', 'Diseased3', 'Stomach', 'ImageNet21k'
 ]
