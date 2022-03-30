@@ -37,15 +37,15 @@ data = dict(
     workers_per_gpu=8,
     train=dict(
         type=dataset_type,
-        data_prefix='/data3/dataset/XY_Capsule/Whole_Image_Classification/train',
+        data_prefix='/data3/dataset/XY_Capsule/Whole_Image_Classification/binary/train',
         pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
-        data_prefix='/data3/dataset/XY_Capsule/Whole_Image_Classification/test',
+        data_prefix='/data3/dataset/XY_Capsule/Whole_Image_Classification/binary/test',
         pipeline=test_pipeline),
     test=dict(
         # replace `data/val` with `data/test` for standard test
         type=dataset_type,
-        data_prefix='/data3/dataset/XY_Capsule/Whole_Image_Classification/test',
+        data_prefix='/data3/dataset/XY_Capsule/Whole_Image_Classification/binary/test',
         pipeline=test_pipeline))
 evaluation = dict(interval=1, metric='accuracy')
