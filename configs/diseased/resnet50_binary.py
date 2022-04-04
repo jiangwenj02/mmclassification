@@ -4,7 +4,7 @@ _base_ = [
 ]
 model = dict(
     head=dict(
-        num_classes=15,
+        num_classes=2,
         topk=(1,))
 )
 

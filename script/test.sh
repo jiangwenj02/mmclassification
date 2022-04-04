@@ -66,3 +66,10 @@ python tools/visualizations/vis_cam_config.py configs/diseased/resnet50_binary.p
 --target-layers model.backbone.layer4.2  --method GradCAM --save-path work_dirs/resnet50_binary/grad_cam20220330 && \
 python tools/test_robust.py configs/diseased/resnet50_binary.py work_dirs/resnet50_binary/latest.pth  --metrics accuracy precision recall f1_score f2_score support && \
 python tools/test_robust.py configs/diseased/resnet50_binary.py work_dirs/resnet50_binary/latest.pth --show-dir work_dirs/resnet50_binary/result_20220330
+
+20220404
+CUDA_VISIBLE_DEVICES=0 python tools/train.py configs/diseased/resnet50_binary.py && \
+python tools/visualizations/vis_cam_config.py configs/diseased/resnet50_binary.py work_dirs/resnet50_binary/latest.pth  \
+--target-layers model.backbone.layer4.2  --method GradCAM --save-path work_dirs/resnet50_binary/grad_cam20220404 && \
+python tools/test_robust.py configs/diseased/resnet50_binary.py work_dirs/resnet50_binary/latest.pth  --metrics accuracy precision recall f1_score f2_score support && \
+python tools/test_robust.py configs/diseased/resnet50_binary.py work_dirs/resnet50_binary/latest.pth --show-dir work_dirs/resnet50_binary/result_20220404
