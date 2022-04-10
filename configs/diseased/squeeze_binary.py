@@ -9,4 +9,3 @@ model = dict(
 )
 
 optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
-load_from = 'https://download.pytorch.org/models/squeezenet1_0-b66bff10.pth' 

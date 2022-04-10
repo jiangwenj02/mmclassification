@@ -2,7 +2,11 @@
 model = dict(
     type='ImageClassifier',
     backbone=dict(
-        type='SqueezeNet'),
+        type='SqueezeNet',
+        init_cfg = dict(
+            type='Pretrained', 
+            checkpoint='https://download.pytorch.org/models/squeezenet1_0-b66bff10.pth', 
+            prefix='backbone')),
     neck=dict(type='GlobalAveragePooling'),
     head=dict(
         type='LinearClsHead',
