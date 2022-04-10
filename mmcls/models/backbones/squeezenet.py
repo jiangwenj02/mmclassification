@@ -78,18 +78,9 @@ class SqueezeNet(BaseModule):
             # FIXME: This checking is not done for the other models
             raise ValueError(f"Unsupported SqueezeNet version {version}: 1_0 or 1_1 expected")
 
-        # Final convolution is initialized differently from the rest
-        final_conv = nn.Conv2d(512, self.num_classes, kernel_size=1)
-        self.classifier = nn.Sequential(
-            nn.Dropout(p=dropout), final_conv, nn.ReLU(inplace=True), nn.AdaptiveAvgPool2d((1, 1))
-        )
-
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                if m is final_conv:
-                    init.normal_(m.weight, mean=0.0, std=0.01)
-                else:
-                    init.kaiming_uniform_(m.weight)
+                init.kaiming_uniform_(m.weight)
                 if m.bias is not None:
                     init.constant_(m.bias, 0)
 
