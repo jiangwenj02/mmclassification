@@ -37,8 +37,8 @@ class Fire(BaseModule):
 
 @BACKBONES.register_module()
 class SqueezeNet(BaseModule):
-    def __init__(self, version: str = "1_0", num_classes: int = 1000, dropout: float = 0.5) -> None:
-        super().__init__()
+    def __init__(self, version: str = "1_0", num_classes: int = 1000, dropout: float = 0.5, init_cfg=None) -> None:
+        super(SqueezeNet, self).__init__(init_cfg)
         self.num_classes = num_classes
         if version == "1_0":
             self.features = nn.Sequential(
