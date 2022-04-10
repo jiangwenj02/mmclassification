@@ -5,8 +5,7 @@ model = dict(
         type='SqueezeNet',
         init_cfg = dict(
             type='Pretrained', 
-            checkpoint='https://download.pytorch.org/models/squeezenet1_0-b66bff10.pth', 
-            prefix='backbone')),
+            checkpoint='https://download.pytorch.org/models/squeezenet1_0-b66bff10.pth')),
     neck=dict(type='GlobalAveragePooling'),
     head=dict(
         type='LinearClsHead',
