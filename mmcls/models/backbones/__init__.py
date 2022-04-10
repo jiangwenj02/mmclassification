@@ -23,6 +23,7 @@ from .timm_backbone import TIMMBackbone
 from .tnt import TNT
 from .vgg import VGG
 from .laresnet import LAResNet
+from .squeezenet import SqueezeNet
 from .vision_transformer import VisionTransformer
 
 __all__ = [
@@ -30,5 +31,5 @@ __all__ = [
     'ResNeSt', 'ResNet_CIFAR', 'SEResNet', 'SEResNeXt', 'ShuffleNetV1',
     'ShuffleNetV2', 'MobileNetV2', 'MobileNetV3', 'LAResNet', 'VisionTransformer',
     'SwinTransformer', 'TNT', 'TIMMBackbone', 'T2T_ViT', 'Res2Net', 'RepVGG',
-    'Conformer', 'MlpMixer', 'DistilledVisionTransformer'
+    'Conformer', 'MlpMixer', 'DistilledVisionTransformer', 'SqueezeNet'
 ]
