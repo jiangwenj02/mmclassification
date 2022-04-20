@@ -96,6 +96,6 @@ python tools/test_robust.py configs/diseased/resnet152_binary.py work_dirs/resne
 
 CUDA_VISIBLE_DEVICES=0 python tools/train.py configs/diseased/squeeze_binary.py && \
 python tools/visualizations/vis_cam_config.py configs/diseased/squeeze_binary.py work_dirs/squeeze_binary/latest.pth  \
---target-layers model.backbone.features.13  --method GradCAM --save-path work_dirs/squeeze_binary/grad_cam20220410 && \
+--target-layers model.backbone.features.12  --method GradCAM --save-path work_dirs/squeeze_binary/grad_cam20220410 && \
 python tools/test_robust.py configs/diseased/squeeze_binary.py work_dirs/squeeze_binary/latest.pth  --metrics accuracy precision recall f1_score f2_score support && \
 python tools/test_robust.py configs/diseased/squeeze_binary.py work_dirs/squeeze_binary/latest.pth --show-dir work_dirs/squeeze_binary/result_20220410
