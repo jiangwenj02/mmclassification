@@ -112,3 +112,16 @@ python tools/visualizations/vis_cam_config.py configs/diseased/shuffle_stomach_m
 --target-layers model.backbone.layers.3 --method GradCAM --save-path work_dirs/shuffle_stomach_mix_hr/grad_cam20220426 && \
 python tools/test_robust.py configs/diseased/shuffle_stomach_mix_hr.py work_dirs/shuffle_stomach_mix_hr/latest.pth --metrics accuracy precision recall f1_score f2_score support && \
 python tools/test_robust.py configs/diseased/shuffle_stomach_mix_hr.py work_dirs/shuffle_stomach_mix_hr/latest.pth --show-dir work_dirs/shuffle_stomach_mix_hr/result_20220426
+
+20200427
+CUDA_VISIBLE_DEVICES=1 python tools/train.py configs/diseased/resnet50_multi.py && \
+python tools/visualizations/vis_cam_config.py configs/diseased/resnet50_multi.py work_dirs/resnet50_multi/latest.pth  \
+--target-layers model.backbone.layer4.2  --method GradCAM --save-path work_dirs/resnet50_multi/grad_cam20220427 && \
+python tools/test_robust.py configs/diseased/resnet50_multi.py work_dirs/resnet50_multi/latest.pth  --metrics accuracy precision recall f1_score f2_score support && \
+python tools/test_robust.py configs/diseased/resnet50_multi.py work_dirs/resnet50_multi/latest.pth --show-dir work_dirs/resnet50_multi/result_20220427
+
+CUDA_VISIBLE_DEVICES=0 python tools/train.py configs/diseased/shuffle_stomach_multi.py && \
+python tools/visualizations/vis_cam_config.py configs/diseased/shuffle_stomach_multi.py work_dirs/shuffle_stomach_multi/latest.pth  \
+--target-layers model.backbone.layers.3 --method GradCAM --save-path work_dirs/shuffle_stomach_multi/grad_cam20220427 && \
+python tools/test_robust.py configs/diseased/shuffle_stomach_multi.py work_dirs/shuffle_stomach_multi/latest.pth --metrics accuracy precision recall f1_score f2_score support && \
+python tools/test_robust.py configs/diseased/shuffle_stomach_multi.py work_dirs/shuffle_stomach_multi/latest.pth --show-dir work_dirs/shuffle_stomach_multi/result_20220427
