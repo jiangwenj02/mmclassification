@@ -113,7 +113,7 @@ python tools/visualizations/vis_cam_config.py configs/diseased/shuffle_stomach_m
 python tools/test_robust.py configs/diseased/shuffle_stomach_mix_hr.py work_dirs/shuffle_stomach_mix_hr/latest.pth --metrics accuracy precision recall f1_score f2_score support && \
 python tools/test_robust.py configs/diseased/shuffle_stomach_mix_hr.py work_dirs/shuffle_stomach_mix_hr/latest.pth --show-dir work_dirs/shuffle_stomach_mix_hr/result_20220426
 
-20200427
+20220427
 CUDA_VISIBLE_DEVICES=1 python tools/train.py configs/diseased/resnet50_multi.py && \
 python tools/visualizations/vis_cam_config.py configs/diseased/resnet50_multi.py work_dirs/resnet50_multi/latest.pth  \
 --target-layers model.backbone.layer4.2  --method GradCAM --save-path work_dirs/resnet50_multi/grad_cam20220427 && \
@@ -125,3 +125,16 @@ python tools/visualizations/vis_cam_config.py configs/diseased/shuffle_stomach_m
 --target-layers model.backbone.layers.3 --method GradCAM --save-path work_dirs/shuffle_stomach_multi/grad_cam20220427 && \
 python tools/test_robust.py configs/diseased/shuffle_stomach_multi.py work_dirs/shuffle_stomach_multi/latest.pth --metrics accuracy precision recall f1_score f2_score support && \
 python tools/test_robust.py configs/diseased/shuffle_stomach_multi.py work_dirs/shuffle_stomach_multi/latest.pth --show-dir work_dirs/shuffle_stomach_multi/result_20220427
+
+20220504
+CUDA_VISIBLE_DEVICES=1 python tools/train.py configs/diseased/resnet152_binary.py && \
+python tools/visualizations/vis_cam_config.py configs/diseased/resnet152_binary.py work_dirs/resnet152_binary/latest.pth  \
+--target-layers model.backbone.layer4.2  --method GradCAM --save-path work_dirs/resnet152_binary/grad_cam20220504 && \
+python tools/test_robust.py configs/diseased/resnet152_binary.py work_dirs/resnet152_binary/latest.pth  --metrics accuracy precision recall f1_score f2_score support && \
+python tools/test_robust.py configs/diseased/resnet152_binary.py work_dirs/resnet152_binary/latest.pth --show-dir work_dirs/resnet152_binary/result_20220504
+
+CUDA_VISIBLE_DEVICES=0 python tools/train.py configs/diseased/squeeze_binary.py && \
+python tools/visualizations/vis_cam_config.py configs/diseased/squeeze_binary.py work_dirs/squeeze_binary/latest.pth  \
+--target-layers model.backbone.features.12  --method GradCAM --save-path work_dirs/squeeze_binary/grad_cam20220504 && \
+python tools/test_robust.py configs/diseased/squeeze_binary.py work_dirs/squeeze_binary/latest.pth  --metrics accuracy precision recall f1_score f2_score support && \
+python tools/test_robust.py configs/diseased/squeeze_binary.py work_dirs/squeeze_binary/latest.pth --show-dir work_dirs/squeeze_binary/result_20220504
