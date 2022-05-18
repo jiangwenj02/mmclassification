@@ -14,14 +14,14 @@ class MultiDiseased(ImageNet):
     """
 
     IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif')
-    # CLASSES = [
-    #     'bleeding', 'erosion', 'lymph_foilicie_hyperplasia', 'polyp', 'protuberant', 'stenosis',
-    #     'vascular_changes', 'white_granular_degeneration', 'diverticulum', 'health',
-    #     'mucous_membrane_hyperemia_edema', 'polypide', 'scar', 'ulcer', 'villous_change'
-    # ]
-
     CLASSES = [
         'bleeding', 'erosion', 'lymph_foilicie_hyperplasia', 'polyp', 'protuberant', 'stenosis',
         'vascular_changes', 'white_granular_degeneration', 'diverticulum', 'health',
-        'mucous_membrane_hyperemia_edema', 'ulcer', 'villous_change'
+        'mucous_membrane_hyperemia_edema', 'polypide', 'scar', 'ulcer', 'villous_change'
     ]
+
+    # CLASSES = [
+    #     'bleeding', 'erosion', 'lymph_foilicie_hyperplasia', 'polyp', 'protuberant', 'stenosis',
+    #     'vascular_changes', 'white_granular_degeneration', 'diverticulum', 'health',
+    #     'mucous_membrane_hyperemia_edema', 'ulcer', 'villous_change'
+    # ]
